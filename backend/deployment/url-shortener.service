@@ -1,0 +1,15 @@
+[Unit]
+Description=Url Shortener
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=backend
+ExecStart=backend
+Restart=always
+RestartSec=4
+StandardOutput=inherit
+EnvironmentFile=backend/config.env
+
+[Install]
+WantedBy=multi-user.target
