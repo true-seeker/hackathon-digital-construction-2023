@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/http-server/handlers/building"
 	"backend/internal/http-server/handlers/elevator"
+	screen "backend/internal/http-server/handlers/screen"
 	"backend/internal/storage/postgres"
 	"backend/internal/storage/postgres/repository"
 	"fmt"
@@ -44,6 +45,7 @@ func main() {
 
 	buildingRepository := repository.NewBuildingRepository(storage.GetDb())
 	elevatorRepository := repository.NewElevatorRepository(storage.GetDb())
+	screenRepository := repository.NewScreenRepository(storage.GetDb())
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -76,7 +78,15 @@ func main() {
 			r.Post("/", elevator.New(log, elevatorRepository))
 			r.Get("/", elevator.GetAll(log, elevatorRepository))
 			r.Get("/{id}", elevator.Get(log, elevatorRepository))
+			r.Get("/{elevator_id}/screens", screen.GetByElevator(log, screenRepository))
 			r.Put("/", elevator.Update(log, elevatorRepository))
+		})
+
+		r.Route("/screens", func(r chi.Router) {
+			r.Post("/", screen.New(log, screenRepository))
+			r.Get("/", screen.GetAll(log, screenRepository))
+			r.Get("/{id}", screen.Get(log, screenRepository))
+			r.Put("/", screen.Update(log, screenRepository))
 		})
 	})
 

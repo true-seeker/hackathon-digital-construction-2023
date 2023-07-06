@@ -39,7 +39,7 @@ func New(storagePath string) (*Storage, error) {
 			name        varchar(64)      NOT NULL
 		);
 		
-		CREATE TABLE IF NOT EXISTS screens
+		CREATE TABLE IF NOT EXISTS screen
 		(
 			id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
 			elevator_id uuid             NOT NULL REFERENCES elevators (id),
@@ -64,7 +64,7 @@ func New(storagePath string) (*Storage, error) {
 		CREATE TABLE IF NOT EXISTS screen_widgets
 		(
 			id           uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			screen_id    uuid             NOT NULL REFERENCES screens (id),
+			screen_id    uuid             NOT NULL REFERENCES screen (id),
 			widget_id    uuid             NOT NULL REFERENCES widgets (id),
 			deleted_date timestamp                 DEFAULT NULL
 		);
