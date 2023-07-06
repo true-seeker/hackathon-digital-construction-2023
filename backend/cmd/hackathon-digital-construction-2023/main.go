@@ -105,6 +105,7 @@ func main() {
 
 		r.Route("/screen_widgets", func(r chi.Router) {
 			r.Post("/", screenWidget.Save(log, screenWidgetRepository))
+			r.Get("/{screen_id}", screenWidget.Get(log, screenWidgetRepository))
 		})
 
 		r.Route("/zhks", func(r chi.Router) {

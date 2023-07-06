@@ -54,3 +54,24 @@ func (s *ScreenWidgetRepository) Save(req *screenWidget.SaveRequest) (*[]entitie
 	}
 	return req.ScreenWidgets, nil
 }
+
+func (s *ScreenWidgetRepository) Get(screenId string) ([]*entities.ScreenWidget, error) {
+	rows, err := s.db.Query("select id, screen_id, widget_id, x, y, x_size, y_size from screen_widgets "+
+		"WHERE screen_id=$1 AND deleted_date IS NULL", screenId)
+	if err != nil {
+		// TODO LOGGER
+	}
+	defer rows.Close()
+	var screenWidgets []*entities.ScreenWidget
+
+	for rows.Next() {
+		b := entities.ScreenWidget{}
+		err := rows.Scan(&b.Id, &b.ScreenId, &b.WidgetId, &b.X, &b.Y, &b.XSize, &b.YSize)
+		if err != nil {
+			fmt.Println(err) // TODO LOGGER
+			continue
+		}
+		screenWidgets = append(screenWidgets, &b)
+	}
+	return screenWidgets, nil
+}
