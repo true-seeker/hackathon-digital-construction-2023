@@ -9,7 +9,7 @@ func NewCurrencyService() *Service {
 	return &Service{}
 }
 
-func (s *Service) GetCurrencies() (*[]entities.Currency, error) {
+func (s *Service) GetTransport() (*[]entities.Currency, error) {
 	currencies := []entities.Currency{{
 		Name:  "USD",
 		Value: 90.35,

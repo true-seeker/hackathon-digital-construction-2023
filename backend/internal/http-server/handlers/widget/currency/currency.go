@@ -15,13 +15,13 @@ type getResponse struct {
 }
 
 type Getter interface {
-	GetCurrencies() (*[]entities.Currency, error)
+	GetTransport() (*[]entities.Currency, error)
 }
 
 func GetCurrencies(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// TODO weather by region
-		currencies, err := getter.GetCurrencies()
+		currencies, err := getter.GetTransport()
 
 		if err != nil {
 			log.Error("failed to get currencies", sl.Err(err))

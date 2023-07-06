@@ -73,13 +73,23 @@ func (b *BuildingRepository) Update(request *building.UpdateRequest) (*entities.
 	return bd, nil
 }
 
-func (b *BuildingRepository) GetByZhk(id string) (*entities.Building, error) {
-	row := b.db.QueryRow("select id, name, address, zhk_id from buildings WHERE zhk_id=$1", id)
-	var bd entities.Building
-	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId)
+func (b *BuildingRepository) GetByZhk(id string) ([]*entities.Building, error) {
+	rows, err := b.db.Query("select id,name,address,zhk_id from buildings WHERE zhk_id=$1", id)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		// TODO LOGGER
 	}
+	defer rows.Close()
+	var buildings []*entities.Building
 
-	return &bd, nil
+	for rows.Next() {
+		b := entities.Building{}
+		err := rows.Scan(&b.Id, &b.Name, &b.Address, &b.ZhkId)
+		if err != nil {
+			fmt.Println(err) // TODO LOGGER
+			continue
+		}
+		buildings = append(buildings, &b)
+	}
+	return buildings, nil
+
 }

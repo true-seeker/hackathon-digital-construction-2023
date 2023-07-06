@@ -5,9 +5,11 @@ import (
 	"backend/internal/http-server/handlers/elevator"
 	"backend/internal/http-server/handlers/screen"
 	currencyWidghet "backend/internal/http-server/handlers/widget/currency"
+	transportWidghet "backend/internal/http-server/handlers/widget/transport"
 	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
 	"backend/internal/http-server/handlers/zhk"
 	"backend/internal/http-server/services/widget/currency"
+	"backend/internal/http-server/services/widget/transport"
 	"backend/internal/http-server/services/widget/weather"
 	"backend/internal/storage/postgres"
 	"backend/internal/storage/postgres/repository"
@@ -55,6 +57,7 @@ func main() {
 
 	weatherService := weather.NewWeatherService()
 	currencyService := currency.NewCurrencyService()
+	transportService := transport.NewTransportService()
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -109,7 +112,7 @@ func main() {
 		r.Route("/widgets", func(r chi.Router) {
 			r.Get("/weather", weatherWidghet.GetWeather(log, weatherService))
 			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
-			r.Get("/{id}", zhk.Get(log, zhkRepository))
+			r.Get("/transport", transportWidghet.GetTransport(log, transportService))
 			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
 			r.Put("/", zhk.Update(log, zhkRepository))
 		})
