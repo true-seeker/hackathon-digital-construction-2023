@@ -4,6 +4,7 @@ import (
 	"backend/internal/http-server/handlers/building"
 	"backend/internal/http-server/handlers/elevator"
 	"backend/internal/http-server/handlers/screen"
+	"backend/internal/http-server/handlers/screenWidget"
 	currencyWidghet "backend/internal/http-server/handlers/widget/currency"
 	transportWidghet "backend/internal/http-server/handlers/widget/transport"
 	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
@@ -54,6 +55,7 @@ func main() {
 	elevatorRepository := repository.NewElevatorRepository(storage.GetDb())
 	screenRepository := repository.NewScreenRepository(storage.GetDb())
 	zhkRepository := repository.NewZhkRepository(storage.GetDb())
+	screenWidgetRepository := repository.NewScreenWidgetRepository(storage.GetDb())
 
 	weatherService := weather.NewWeatherService()
 	currencyService := currency.NewCurrencyService()
@@ -99,6 +101,10 @@ func main() {
 			r.Get("/", screen.GetAll(log, screenRepository))
 			r.Get("/{id}", screen.Get(log, screenRepository))
 			r.Put("/", screen.Update(log, screenRepository))
+		})
+
+		r.Route("/screen_widgets", func(r chi.Router) {
+			r.Post("/", screenWidget.Save(log, screenWidgetRepository))
 		})
 
 		r.Route("/zhks", func(r chi.Router) {
