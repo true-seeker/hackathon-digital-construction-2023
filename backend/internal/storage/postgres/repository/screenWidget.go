@@ -44,7 +44,7 @@ func (s *ScreenWidgetRepository) Save(req *screenWidget.SaveRequest) (*[]entitie
 		return nil, err
 	}
 
-	_, err = tx.Exec("UPDATE screen_widgets SET deleted_date=now() WHERE screen_id = $1", req.ScreenId)
+	_, err = tx.Exec("UPDATE screen_widgets SET deleted_date=now() WHERE screen_id = $1 AND deleted_date is null", req.ScreenId)
 	if err != nil {
 		return nil, err
 	}
