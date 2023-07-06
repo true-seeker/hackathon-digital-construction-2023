@@ -16,7 +16,7 @@ func NewBuildingRepository(db *sql.DB) *BuildingRepository {
 }
 
 func (b *BuildingRepository) GetAll() ([]*entities.Building, error) {
-	rows, err := b.db.Query("select id,name,address from buildings")
+	rows, err := b.db.Query("select id,name,address,zhk_id from buildings")
 	if err != nil {
 		// TODO LOGGER
 	}
@@ -25,7 +25,7 @@ func (b *BuildingRepository) GetAll() ([]*entities.Building, error) {
 
 	for rows.Next() {
 		b := entities.Building{}
-		err := rows.Scan(&b.Id, &b.Name, &b.Address)
+		err := rows.Scan(&b.Id, &b.Name, &b.Address, &b.ZhkId)
 		if err != nil {
 			fmt.Println(err) // TODO LOGGER
 			continue
@@ -36,9 +36,9 @@ func (b *BuildingRepository) GetAll() ([]*entities.Building, error) {
 }
 
 func (b *BuildingRepository) Get(id string) (*entities.Building, error) {
-	row := b.db.QueryRow("select id, name, address from buildings WHERE id=$1", id)
+	row := b.db.QueryRow("select id, name, address, zhk_id from buildings WHERE id=$1", id)
 	var bd entities.Building
-	err := row.Scan(&bd.Id, &bd.Name, &bd.Address)
+	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId)
 	if err != nil {
 		fmt.Println(err) // TODO LOGGER
 	}
@@ -48,8 +48,8 @@ func (b *BuildingRepository) Get(id string) (*entities.Building, error) {
 
 func (b *BuildingRepository) New(request *building.SaveRequest) (*entities.Building, error) {
 	id := ""
-	_ = b.db.QueryRow("insert into buildings (name, address) values ($1, $2) RETURNING id",
-		request.Name, request.Address).Scan(&id)
+	_ = b.db.QueryRow("insert into buildings (name, address, zhk_id) values ($1, $2, $3) RETURNING id",
+		request.Name, request.Address, request.ZhkId).Scan(&id)
 
 	bd, err := b.Get(id)
 	if err != nil {
@@ -60,8 +60,8 @@ func (b *BuildingRepository) New(request *building.SaveRequest) (*entities.Build
 }
 
 func (b *BuildingRepository) Update(request *building.UpdateRequest) (*entities.Building, error) {
-	_, err := b.db.Exec("update buildings SET name=$2, address=$3 WHERE id=$1",
-		request.Id, request.Name, request.Address)
+	_, err := b.db.Exec("update buildings SET name=$2, address=$3, zhk_id=$4 WHERE id=$1",
+		request.Id, request.Name, request.Address, request.ZhkId)
 	if err != nil {
 		fmt.Println(err) // TODO LOGGER
 	}

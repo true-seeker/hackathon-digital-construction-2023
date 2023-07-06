@@ -1,4 +1,4 @@
-package building
+package zhk
 
 import (
 	"backend/internal/domain/entities"
@@ -14,24 +14,22 @@ import (
 )
 
 type SaveRequest struct {
-	Name    string `json:"name,omitempty" validate:"required"`
-	Address string `json:"address,omitempty" validate:"required"`
-	ZhkId   string `json:"zhk_id,omitempty" validate:"required"`
+	Name string `json:"name,omitempty" validate:"required"`
 }
 
 type saveResponse struct {
 	resp.Response
-	Building *entities.Building `json:"building"`
+	Zhk *entities.Zhk `json:"zhk"`
 }
 
-//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=buildingSaver
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=zhkSaver
 type Saver interface {
-	New(req *SaveRequest) (*entities.Building, error)
+	New(req *SaveRequest) (*entities.Zhk, error)
 }
 
 func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.New"
+		const op = "handlers.url.zhk.New"
 
 		log = log.With(
 			slog.String("op", op),
@@ -61,24 +59,24 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 			return
 		}
 
-		building, err := saver.New(&req)
+		zhk, err := saver.New(&req)
 		if err != nil {
-			log.Error("failed to add building", sl.Err(err))
+			log.Error("failed to add zhk", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to add building"))
+			render.JSON(w, r, resp.Error("failed to add zhk"))
 
 			return
 		}
 
-		log.Info("building added", slog.String("id", building.Id))
+		log.Info("zhk added", slog.String("id", zhk.Id))
 
-		saverResponseOK(w, r, building)
+		saverResponseOK(w, r, zhk)
 	}
 }
 
-func saverResponseOK(w http.ResponseWriter, r *http.Request, building *entities.Building) {
+func saverResponseOK(w http.ResponseWriter, r *http.Request, zhk *entities.Zhk) {
 	render.JSON(w, r, saveResponse{
 		Response: resp.OK(),
-		Building: building,
+		Zhk:      zhk,
 	})
 }

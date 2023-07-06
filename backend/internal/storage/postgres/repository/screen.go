@@ -16,7 +16,7 @@ func NewScreenRepository(db *sql.DB) *ScreenRepository {
 }
 
 func (b *ScreenRepository) GetAll() ([]*entities.Screen, error) {
-	rows, err := b.db.Query("select id,name,elevator_id,x,y from screens")
+	rows, err := b.db.Query("select id,name,elevator_id,x,y from screen")
 	if err != nil {
 		// TODO LOGGER
 	}
@@ -36,7 +36,7 @@ func (b *ScreenRepository) GetAll() ([]*entities.Screen, error) {
 }
 
 func (b *ScreenRepository) Get(id string) (*entities.Screen, error) {
-	row := b.db.QueryRow("select id, name, elevator_id,x,y from screens WHERE id=$1", id)
+	row := b.db.QueryRow("select id, name, elevator_id,x,y from screen WHERE id=$1", id)
 	var e entities.Screen
 	err := row.Scan(&e.Id, &e.Name, &e.ElevatorId, &e.X, &e.Y)
 	if err != nil {
@@ -48,7 +48,7 @@ func (b *ScreenRepository) Get(id string) (*entities.Screen, error) {
 
 func (b *ScreenRepository) New(request *screen.SaveRequest) (*entities.Screen, error) {
 	id := ""
-	_ = b.db.QueryRow("insert into screens(name, elevator_id,x,y) values ($1, $2, $3,$4) RETURNING id",
+	_ = b.db.QueryRow("insert into screen(name, elevator_id,x,y) values ($1, $2, $3,$4) RETURNING id",
 		request.Name, request.ElevatorId, request.X, request.Y).Scan(&id)
 
 	e, err := b.Get(id)
@@ -60,7 +60,7 @@ func (b *ScreenRepository) New(request *screen.SaveRequest) (*entities.Screen, e
 }
 
 func (b *ScreenRepository) Update(request *screen.UpdateRequest) (*entities.Screen, error) {
-	_, err := b.db.Exec("update screens SET name=$2, elevator_id=$3, x=$4, y=$5 WHERE id=$1",
+	_, err := b.db.Exec("update screen SET name=$2, elevator_id=$3, x=$4, y=$5 WHERE id=$1",
 		request.Id, request.Name, request.ElevatorId, request.X, request.Y,
 	)
 	if err != nil {
@@ -75,7 +75,7 @@ func (b *ScreenRepository) Update(request *screen.UpdateRequest) (*entities.Scre
 }
 
 func (b *ScreenRepository) GetByElevator(elevatorId string) ([]*entities.Screen, error) {
-	rows, err := b.db.Query("select id,name,elevator_id,x,y from screens WHERE elevator_id=$1", elevatorId)
+	rows, err := b.db.Query("select id,name,elevator_id,x,y from screen WHERE elevator_id=$1", elevatorId)
 	if err != nil {
 		// TODO LOGGER
 	}

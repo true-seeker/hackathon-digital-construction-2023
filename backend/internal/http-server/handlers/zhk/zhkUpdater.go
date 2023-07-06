@@ -1,4 +1,4 @@
-package building
+package zhk
 
 import (
 	"backend/internal/domain/entities"
@@ -14,25 +14,23 @@ import (
 )
 
 type UpdateRequest struct {
-	Id      string `json:"id,omitempty" validate:"required"`
-	Name    string `json:"name,omitempty" validate:"required"`
-	Address string `json:"address,omitempty" validate:"required"`
-	ZhkId   string `json:"zhk_id,omitempty" validate:"required"`
+	Id   string `json:"id,omitempty" validate:"required"`
+	Name string `json:"name,omitempty" validate:"required"`
 }
 
 type updateResponse struct {
 	resp.Response
-	Building *entities.Building `json:"building"`
+	Zhk *entities.Zhk `json:"zhk"`
 }
 
-//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=buildingSaver
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=zhkSaver
 type Updater interface {
-	Update(req *UpdateRequest) (*entities.Building, error)
+	Update(req *UpdateRequest) (*entities.Zhk, error)
 }
 
 func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.Update"
+		const op = "handlers.url.zhk.Update"
 
 		log = log.With(
 			slog.String("op", op),
@@ -62,24 +60,24 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 			return
 		}
 
-		building, err := updater.Update(&req)
+		zhk, err := updater.Update(&req)
 		if err != nil {
-			log.Error("failed to add building", sl.Err(err))
+			log.Error("failed to add zhk", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to add building"))
+			render.JSON(w, r, resp.Error("failed to add zhk"))
 
 			return
 		}
 
-		log.Info("building added", slog.String("id", building.Id))
+		log.Info("zhk added", slog.String("id", zhk.Id))
 
-		saverResponseOK(w, r, building)
+		saverResponseOK(w, r, zhk)
 	}
 }
 
-func updaterResponseOK(w http.ResponseWriter, r *http.Request, building *entities.Building) {
+func updaterResponseOK(w http.ResponseWriter, r *http.Request, zhk *entities.Zhk) {
 	render.JSON(w, r, updateResponse{
 		Response: resp.OK(),
-		Building: building,
+		Zhk:      zhk,
 	})
 }

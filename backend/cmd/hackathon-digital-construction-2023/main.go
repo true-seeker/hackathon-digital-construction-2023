@@ -4,6 +4,7 @@ import (
 	"backend/internal/http-server/handlers/building"
 	"backend/internal/http-server/handlers/elevator"
 	screen "backend/internal/http-server/handlers/screen"
+	"backend/internal/http-server/handlers/zhk"
 	"backend/internal/storage/postgres"
 	"backend/internal/storage/postgres/repository"
 	"fmt"
@@ -46,6 +47,7 @@ func main() {
 	buildingRepository := repository.NewBuildingRepository(storage.GetDb())
 	elevatorRepository := repository.NewElevatorRepository(storage.GetDb())
 	screenRepository := repository.NewScreenRepository(storage.GetDb())
+	zhkRepository := repository.NewZhkRepository(storage.GetDb())
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -87,6 +89,13 @@ func main() {
 			r.Get("/", screen.GetAll(log, screenRepository))
 			r.Get("/{id}", screen.Get(log, screenRepository))
 			r.Put("/", screen.Update(log, screenRepository))
+		})
+
+		r.Route("/zhks", func(r chi.Router) {
+			r.Post("/", zhk.New(log, zhkRepository))
+			r.Get("/", zhk.GetAll(log, zhkRepository))
+			r.Get("/{id}", zhk.Get(log, zhkRepository))
+			r.Put("/", zhk.Update(log, zhkRepository))
 		})
 	})
 

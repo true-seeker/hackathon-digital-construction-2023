@@ -20,54 +20,58 @@ func New(storagePath string) (*Storage, error) {
 		panic(err)
 	}
 
-	_, err = db.Exec(`
-		CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-		
-		CREATE TABLE IF NOT EXISTS buildings
-		(
-			id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			name    varchar(64),
-			address varchar(512)
-		);
-		
-		
-		
-		CREATE TABLE IF NOT EXISTS elevators
-		(
-			id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			building_id uuid             NOT NULL REFERENCES buildings (id),
-			name        varchar(64)      NOT NULL
-		);
-		
-		CREATE TABLE IF NOT EXISTS screen
-		(
-			id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			elevator_id uuid             NOT NULL REFERENCES elevators (id),
-			name        varchar(64)      NOT NULL,
-			x           integer          NOT NULL,
-			y           integer          NOT NULL
-		);
-		
-		CREATE TABLE IF NOT EXISTS widget_types
-		(
-			id   uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			name varchar(64)      NOT NULL
-		);
-		
-		CREATE TABLE IF NOT EXISTS widgets
-		(
-			id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			name    varchar(64)      NOT NULL,
-			type_id uuid             NOT NULL REFERENCES widget_types (id)
-		);
-		
-		CREATE TABLE IF NOT EXISTS screen_widgets
-		(
-			id           uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-			screen_id    uuid             NOT NULL REFERENCES screen (id),
-			widget_id    uuid             NOT NULL REFERENCES widgets (id),
-			deleted_date timestamp                 DEFAULT NULL
-		);
+	_, err = db.Exec(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+							
+							CREATE TABLE IF NOT EXISTS zhks
+							(
+								id   uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								name varchar(64)
+							);
+							
+							CREATE TABLE IF NOT EXISTS buildings
+							(
+								id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								name    varchar(64),
+								address varchar(512),
+								zhk_id  uuid             NOT NULL REFERENCES zhks (id)
+							);
+							
+							CREATE TABLE IF NOT EXISTS elevators
+							(
+								id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								building_id uuid             NOT NULL REFERENCES buildings (id),
+								name        varchar(64)      NOT NULL
+							);
+							
+							CREATE TABLE IF NOT EXISTS screen
+							(
+								id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								elevator_id uuid             NOT NULL REFERENCES elevators (id),
+								name        varchar(64)      NOT NULL,
+								x           integer          NOT NULL,
+								y           integer          NOT NULL
+							);
+							
+							CREATE TABLE IF NOT EXISTS widget_types
+							(
+								id   uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								name varchar(64)      NOT NULL
+							);
+							
+							CREATE TABLE IF NOT EXISTS widgets
+							(
+								id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								name    varchar(64)      NOT NULL,
+								type_id uuid             NOT NULL REFERENCES widget_types (id)
+							);
+							
+							CREATE TABLE IF NOT EXISTS screen_widgets
+							(
+								id           uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								screen_id    uuid             NOT NULL REFERENCES screen (id),
+								widget_id    uuid             NOT NULL REFERENCES widgets (id),
+								deleted_date timestamp                 DEFAULT NULL
+							);
 		`)
 	if err != nil {
 		panic(err)
