@@ -46,7 +46,7 @@ type BuildingAddress struct {
 
 func (s *Service) GetComplexes() (*Complex, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/buildings/get-list-crm?token=%s", config.Cfg, s.token), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/buildings/get-list-crm?token=%s", config.Cfg.Ujin.ApiUrl, s.token), nil)
 	if err != nil {
 		return nil, err
 	}
