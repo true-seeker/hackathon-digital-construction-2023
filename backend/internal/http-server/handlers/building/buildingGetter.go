@@ -30,12 +30,12 @@ type Getter interface {
 }
 
 type ComplexService interface {
-	GetComplexes() (complexService.Complex, error)
+	GetComplexes() (*complexService.Complex, error)
 }
 
 func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.GetAll"
+		const op = "handlers.building.GetAll"
 
 		log = log.With(
 			slog.String("op", op),
@@ -45,9 +45,8 @@ func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 		complex, err := complexService.GetComplexes()
 		if err != nil {
 			log.Error("failed to get complexes", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get complexes"))
-
 			return
 		}
 
@@ -71,37 +70,25 @@ func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 
 func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.Get"
-
+		const op = "handlers.building.Get"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
+
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
 			log.Error("failed to convert id", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to convert id"))
-
 			return
 		}
-		//
-		//building, err := getter.Get(id)
-		//if err != nil {
-		//	log.Error("failed to get building", sl.Err(err))
-		//
-		//	render.JSON(w, r, resp.Error("failed to get building"))
-		//
-		//	return
-		//}
-		//getResponseOK(w, r, building)
 
 		complex, err := complexService.GetComplexes()
 		if err != nil {
 			log.Error("failed to get complexes", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get complexes"))
-
 			return
 		}
 
@@ -121,38 +108,37 @@ func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 
 func GetByZhk(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.buildings.Get"
+		const op = "handlers.buildings.GetByZhk"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
-		zhk_id, err := strconv.Atoi(chi.URLParam(r, "zhk_id"))
+
+		zhkId, err := strconv.Atoi(chi.URLParam(r, "zhk_id"))
 		if err != nil {
 			log.Error("failed to convert zhk", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to convert zhk"))
-
 			return
 		}
 
-		complex, err := complexService.GetComplexes()
+		cmplx, err := complexService.GetComplexes()
 		if err != nil {
 			log.Error("failed to get complexes", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get complexes"))
-
 			return
 		}
 
 		var buildingEntities []entities.Building
 		buildingMap := make(map[int]entities.Building)
-		for _, building := range complex.Data.Buildings {
-			if building.Complex.Id == zhk_id {
+		for _, building := range cmplx.Data.Buildings {
+			if building.Complex.Id == zhkId {
 				buildingMap[building.Id] = entities.Building{
 					Id:      building.Id,
 					Name:    building.BuildingInfo.Title,
 					Address: building.BuildingInfo.Address.FullAddress,
-					ZhkId:   zhk_id,
+					ZhkId:   zhkId,
 				}
 			}
 		}

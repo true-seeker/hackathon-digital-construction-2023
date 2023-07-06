@@ -31,8 +31,7 @@ type Updater interface {
 
 func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.elevator.Update"
-
+		const op = "handlers.elevator.Update"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -43,9 +42,8 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode SaveRequest body", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to decode SaveRequest"))
-
 			return
 		}
 
@@ -53,26 +51,23 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
-
 			log.Error("invalid SaveRequest", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.ValidationError(validateErr))
-
 			return
 		}
 
 		elevator, err := updater.Update(&req)
 		if err != nil {
 			log.Error("failed to add elevator", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to add elevator"))
-
 			return
 		}
 
 		log.Info("elevator added", slog.String("id", elevator.Id))
 
-		saverResponseOK(w, r, elevator)
+		updaterResponseOK(w, r, elevator)
 	}
 }
 

@@ -20,14 +20,12 @@ type Getter interface {
 
 func GetTransport(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO weather by region
 		transport, err := getter.GetTransport()
 
 		if err != nil {
 			log.Error("failed to get transport", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get transport"))
-
 			return
 		}
 

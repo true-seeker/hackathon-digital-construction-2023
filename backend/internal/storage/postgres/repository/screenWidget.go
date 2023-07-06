@@ -41,20 +41,20 @@ func (s *ScreenWidgetRepository) Save(req *screenWidget.SaveRequest) (*[]entitie
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	_, err = tx.Exec("UPDATE screen_widgets SET deleted_date=now() WHERE screen_id = $1", req.ScreenId)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	_, err = tx.Exec(stmt, valueArgs...)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	err = tx.Commit()
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	return req.ScreenWidgets, nil
 }
@@ -63,7 +63,7 @@ func (s *ScreenWidgetRepository) Get(screenId string) ([]*entities.ScreenWidget,
 	rows, err := s.db.Query("select id, screen_id, i, x, y, w, h, min_w, min_h, moved, static from screen_widgets "+
 		"WHERE screen_id=$1 AND deleted_date IS NULL", screenId)
 	if err != nil {
-		// TODO LOGGER
+		return nil, err
 	}
 	defer rows.Close()
 	var screenWidgets []*entities.ScreenWidget
@@ -72,7 +72,6 @@ func (s *ScreenWidgetRepository) Get(screenId string) ([]*entities.ScreenWidget,
 		b := entities.ScreenWidget{}
 		err := rows.Scan(&b.Id, &b.ScreenId, &b.I, &b.X, &b.Y, &b.W, &b.H, &b.MinW, &b.MinH, &b.Moved, &b.Static)
 		if err != nil {
-			fmt.Println(err) // TODO LOGGER
 			continue
 		}
 		screenWidgets = append(screenWidgets, &b)

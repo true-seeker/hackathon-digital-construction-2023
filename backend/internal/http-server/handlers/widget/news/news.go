@@ -31,18 +31,16 @@ func GetNews(log *slog.Logger, newsService NewsService, buildingGetter BuildingG
 		buildingId, err := buildingGetter.GetBuildingIdByScreenId(screenId)
 		if err != nil {
 			log.Error("failed to get buildingId", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get buildingId"))
-
 			return
 		}
 
 		ns, err := newsService.GetNews(buildingId)
 		if err != nil {
 			log.Error("failed to get news", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get news"))
-
 			return
 		}
 		var newsEntities []entities.News

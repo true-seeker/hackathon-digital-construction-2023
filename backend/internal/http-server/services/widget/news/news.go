@@ -16,28 +16,36 @@ func NewNewsService(token string) *Service {
 }
 
 type News struct {
-	Data NewsData
+	Data NewsData `json:"data"`
 }
 type NewsData struct {
-	Items []NewsItems
+	Items []NewsItems `json:"items"`
 }
 
 type NewsItems struct {
-	Title string
-	Text  string
-	Date  string
+	Title string `json:"title"`
+	Text  string `json:"text"`
+	Date  string `json:"date"`
 }
 
 func (s *Service) GetNews(buildingId int) (*News, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/news/list?token=%s&d&buildings=%d&type=news", s.token, buildingId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/news/list?token=%s&d&buildings=%d&type=news", s.token, buildingId), nil)
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	var news News
 	err = json.Unmarshal(body, &news)
 	if err != nil {

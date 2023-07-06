@@ -6,7 +6,6 @@ import (
 	resp "backend/internal/lib/api/response"
 	"backend/internal/lib/logger/sl"
 	"encoding/json"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
@@ -57,20 +56,26 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, 
 		buildingId, err := buildingGetter.GetBuildingIdByScreenId(screenId)
 		if err != nil {
 			log.Error("failed to get buildingId", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get buildingId"))
-
 			return
 		}
 		buildingInfo, err := complexService.GetBuildingById(buildingId)
 		if err != nil {
 			log.Error("failed to get buildingInfo", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get buildingInfo"))
-
 			return
 		}
-		location := getLocationByAddress(buildingInfo.Address.FullAddress)
+
+		location, err := getLocationByAddress(buildingInfo.Address.FullAddress)
+		if err != nil {
+			log.Error("failed to getLocationByAddress", sl.Err(err))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error("failed to getLocationByAddress"))
+			return
+		}
+
 		var locationData LocationData
 		if len(location.Data) > 0 {
 			locationData = location.Data[0]
@@ -79,9 +84,8 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, 
 
 		if err != nil {
 			log.Error("failed to get weather", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get weather"))
-
 			return
 		}
 
@@ -90,26 +94,32 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, 
 	}
 }
 
-func getLocationByAddress(address string) Location {
+func getLocationByAddress(address string) (*Location, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://api.positionstack.com/v1/forward?"+
+	req, err := http.NewRequest("GET", "http://api.positionstack.com/v1/forward?"+
 		"access_key=ea9717bef2ef10ba7075c1f42e99be2a"+
 		"& query="+address, nil)
-	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
+	}
+	r, err := client.Do(req)
+	if err != nil {
+		return nil, err
 	}
 
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
 	var location Location
 
 	err = json.Unmarshal(body, &location)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
-	return location
+	return &location, nil
 }
 
 func getResponseOK(w http.ResponseWriter, r *http.Request, weather *entities.Weather) {

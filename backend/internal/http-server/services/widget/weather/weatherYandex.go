@@ -51,7 +51,7 @@ func (s *ServiceYandex) GetWeather(locationData weather.LocationData) (*entities
 	req.Header.Set("X-Yandex-API-Key", "ad8382a6-0730-45fe-a069-7285cedf1dd7")
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	defer resp.Body.Close()
@@ -59,7 +59,7 @@ func (s *ServiceYandex) GetWeather(locationData weather.LocationData) (*entities
 	var yandexWeather YandexWeather
 	err = json.Unmarshal(body, &yandexWeather)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	var w entities.Weather
 

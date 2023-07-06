@@ -27,16 +27,17 @@ func (s *Service) GetCurrency() (*[]entities.Currency, error) {
 		req, _ := http.NewRequest("GET", fmt.Sprintf("https://api.api-ninjas.com/v1/convertcurrency?have=%s&want=RUB&amount=1", currency), nil)
 		resp, err := client.Do(req)
 		if err != nil {
-			fmt.Println(err) // TODO LOGGER
+			fmt.Println(err)
+			continue
 		}
-
 		defer resp.Body.Close()
+
 		body, err := io.ReadAll(resp.Body)
 
 		var cur Currency
 		err = json.Unmarshal(body, &cur)
 		if err != nil {
-			fmt.Println(err) // TODO LOGGER
+			continue
 		}
 
 		currencies = append(currencies, entities.Currency{

@@ -23,7 +23,6 @@ type Getter interface {
 func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.screenWidget.Get"
-
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -33,9 +32,8 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 		screen, err := getter.Get(screenId)
 		if err != nil {
 			log.Error("failed to get screenWidget", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get screenWidget"))
-
 			return
 		}
 

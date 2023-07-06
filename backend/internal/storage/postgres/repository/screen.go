@@ -4,7 +4,6 @@ import (
 	"backend/internal/domain/entities"
 	"backend/internal/http-server/handlers/screen"
 	"database/sql"
-	"fmt"
 )
 
 type ScreenRepository struct {
@@ -18,7 +17,7 @@ func NewScreenRepository(db *sql.DB) *ScreenRepository {
 func (b *ScreenRepository) GetAll() ([]*entities.Screen, error) {
 	rows, err := b.db.Query("select id,name,elevator_id,x,y from screens")
 	if err != nil {
-		// TODO LOGGER
+		return nil, err
 	}
 	defer rows.Close()
 	var screens []*entities.Screen
@@ -27,7 +26,6 @@ func (b *ScreenRepository) GetAll() ([]*entities.Screen, error) {
 		e := entities.Screen{}
 		err := rows.Scan(&e.Id, &e.Name, &e.ElevatorId, &e.X, &e.Y)
 		if err != nil {
-			fmt.Println(err) // TODO LOGGER
 			continue
 		}
 		screens = append(screens, &e)
@@ -40,7 +38,7 @@ func (b *ScreenRepository) Get(id string) (*entities.Screen, error) {
 	var e entities.Screen
 	err := row.Scan(&e.Id, &e.Name, &e.ElevatorId, &e.X, &e.Y)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	return &e, nil
@@ -53,7 +51,7 @@ func (b *ScreenRepository) New(request *screen.SaveRequest) (*entities.Screen, e
 
 	e, err := b.Get(id)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	return e, nil
@@ -64,11 +62,11 @@ func (b *ScreenRepository) Update(request *screen.UpdateRequest) (*entities.Scre
 		request.Id, request.Name, request.ElevatorId, request.X, request.Y,
 	)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	bd, err := b.Get(request.Id)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	return bd, nil
@@ -77,7 +75,7 @@ func (b *ScreenRepository) Update(request *screen.UpdateRequest) (*entities.Scre
 func (b *ScreenRepository) GetByElevator(elevatorId string) ([]*entities.Screen, error) {
 	rows, err := b.db.Query("select id,name,elevator_id,x,y from screens WHERE elevator_id=$1", elevatorId)
 	if err != nil {
-		// TODO LOGGER
+		return nil, err
 	}
 	defer rows.Close()
 	var screens []*entities.Screen
@@ -86,7 +84,6 @@ func (b *ScreenRepository) GetByElevator(elevatorId string) ([]*entities.Screen,
 		e := entities.Screen{}
 		err := rows.Scan(&e.Id, &e.Name, &e.ElevatorId, &e.X, &e.Y)
 		if err != nil {
-			fmt.Println(err) // TODO LOGGER
 			continue
 		}
 		screens = append(screens, &e)

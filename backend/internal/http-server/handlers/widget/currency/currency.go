@@ -24,9 +24,8 @@ func GetCurrencies(log *slog.Logger, getter Getter) http.HandlerFunc {
 
 		if err != nil {
 			log.Error("failed to get currencies", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get currencies"))
-
 			return
 		}
 

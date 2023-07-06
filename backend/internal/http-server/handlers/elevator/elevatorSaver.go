@@ -30,8 +30,7 @@ type Saver interface {
 
 func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.elevator.New"
-
+		const op = "handlers.elevator.New"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -42,9 +41,8 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode SaveRequest body", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to decode SaveRequest"))
-
 			return
 		}
 
@@ -52,20 +50,17 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
-
 			log.Error("invalid SaveRequest", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.ValidationError(validateErr))
-
 			return
 		}
 
 		elevator, err := saver.New(&req)
 		if err != nil {
 			log.Error("failed to add elevator", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to add elevator"))
-
 			return
 		}
 

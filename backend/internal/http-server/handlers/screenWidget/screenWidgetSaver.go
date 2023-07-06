@@ -29,7 +29,6 @@ type Saver interface {
 func Save(log *slog.Logger, saver Saver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.screenWidget.Save"
-
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -40,9 +39,8 @@ func Save(log *slog.Logger, saver Saver) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode SaveRequest body", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to decode SaveRequest"))
-
 			return
 		}
 
@@ -50,20 +48,17 @@ func Save(log *slog.Logger, saver Saver) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
-
 			log.Error("invalid SaveRequest", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.ValidationError(validateErr))
-
 			return
 		}
 
 		screen, err := saver.Save(&req)
 		if err != nil {
 			log.Error("failed to add screenWidget", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to add screenWidget"))
-
 			return
 		}
 

@@ -43,30 +43,35 @@ type BuildingAddress struct {
 	FullAddress string `json:"fullAddress"`
 }
 
-func (s *Service) GetComplexes() (Complex, error) {
+func (s *Service) GetComplexes() (*Complex, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/buildings/get-list-crm?token=%s", s.token), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/buildings/get-list-crm?token=%s", s.token), nil)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	var complex Complex
 	err = json.Unmarshal(body, &complex)
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
-
-	fmt.Println(complex)
-	return complex, nil
+	return &complex, nil
 }
 
 func (s *Service) GetBuildingById(buildingId int) (*BuildingInfo, error) {
 	complex, err := s.GetComplexes()
 	if err != nil {
-		fmt.Println(err) // TODO LOGGER
+		return nil, err
 	}
 	for _, building := range complex.Data.Buildings {
 		if building.Id == buildingId {

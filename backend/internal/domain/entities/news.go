@@ -1,7 +1,7 @@
 package entities
 
 type News struct {
-	Title string
-	Text  string
-	Date  string
+	Title string `json:"title"`
+	Text  string `json:"text"`
+	Date  string `json:"date"`
 }

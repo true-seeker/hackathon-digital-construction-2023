@@ -30,8 +30,7 @@ type Getter interface {
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.screen.GetAll"
-
+		const op = "handlers.screen.GetAll"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -40,9 +39,8 @@ func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 		screens, err := getter.GetAll()
 		if err != nil {
 			log.Error("failed to get screen", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get screen"))
-
 			return
 		}
 		getAllResponseOK(w, r, screens)
@@ -51,8 +49,7 @@ func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 
 func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.screen.Get"
-
+		const op = "handlers.screen.Get"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -62,9 +59,8 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 		screen, err := getter.Get(id)
 		if err != nil {
 			log.Error("failed to get screen", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get screen"))
-
 			return
 		}
 		getResponseOK(w, r, screen)
@@ -73,7 +69,7 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 
 func GetByElevator(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.screen.Get"
+		const op = "handlers.screen.GetByElevator"
 
 		log = log.With(
 			slog.String("op", op),
@@ -84,9 +80,8 @@ func GetByElevator(log *slog.Logger, getter Getter) http.HandlerFunc {
 		screen, err := getter.GetByElevator(elevatorId)
 		if err != nil {
 			log.Error("failed to get screen", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get screen"))
-
 			return
 		}
 		getAllResponseOK(w, r, screen)

@@ -33,8 +33,7 @@ type Updater interface {
 
 func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.screen.Update"
-
+		const op = "handlers.screen.Update"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -45,9 +44,8 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode SaveRequest body", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to decode SaveRequest"))
-
 			return
 		}
 
@@ -55,26 +53,23 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
-
+			render.Status(r, http.StatusBadRequest)
 			log.Error("invalid SaveRequest", sl.Err(err))
-
 			render.JSON(w, r, resp.ValidationError(validateErr))
-
 			return
 		}
 
 		screen, err := updater.Update(&req)
 		if err != nil {
 			log.Error("failed to add screen", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to add screen"))
-
 			return
 		}
 
 		log.Info("screen added", slog.String("id", screen.Id))
 
-		saverResponseOK(w, r, screen)
+		updaterResponseOK(w, r, screen)
 	}
 }
 

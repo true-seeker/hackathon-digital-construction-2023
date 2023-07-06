@@ -30,8 +30,7 @@ type Getter interface {
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.elevator.GetAll"
-
+		const op = "handlers.elevator.GetAll"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -40,9 +39,8 @@ func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 		elevators, err := getter.GetAll()
 		if err != nil {
 			log.Error("failed to get elevators", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get elevators"))
-
 			return
 		}
 		getAllResponseOK(w, r, elevators)
@@ -51,8 +49,7 @@ func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 
 func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.elevator.Get"
-
+		const op = "handlers.elevator.Get"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -62,9 +59,8 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 		elevator, err := getter.Get(id)
 		if err != nil {
 			log.Error("failed to get elevator", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get elevator"))
-
 			return
 		}
 		getResponseOK(w, r, elevator)
@@ -73,20 +69,19 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 
 func GetByBuilding(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.elevator.Get"
-
+		const op = "handlers.elevator.GetByBuilding"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
+
 		buildingId := chi.URLParam(r, "building_id")
 
 		elevator, err := getter.GetByBuilding(buildingId)
 		if err != nil {
 			log.Error("failed to get elevator", sl.Err(err))
-
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, resp.Error("failed to get elevator"))
-
 			return
 		}
 		getAllResponseOK(w, r, elevator)

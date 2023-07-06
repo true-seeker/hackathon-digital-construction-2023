@@ -64,7 +64,7 @@ func New(storagePath string) (*Storage, error) {
 							VALUES ('d30bb91e-6718-4380-a196-9b791b26280d', 'Погода'),
 								   ('63baeddd-2a07-4f71-aa19-62ecbae26429', 'Курсы валют'),
 -- 								   ('', 'Реклама'),
--- 								   ('', 'Транспорт'),
+								   ('e6b16a02-3d14-4185-b02b-ef1c3035f159', 'Транспорт'),
 								   ('d6e2f387-a6ea-471b-96c3-d46a0e7c796d', 'Время'),
 								   ('b71bef49-574e-4354-867c-ca77794172be', 'Новости') ON CONFLICT DO NOTHING;
 		`)
