@@ -3,7 +3,7 @@ version: '3.9'
 services:
   database:
     image: postgres:latest
-    container_name: db
+    container_name: database
     environment:
       - POSTGRES_DB=hackathon
       - POSTGRES_USER=postgres
@@ -20,7 +20,7 @@ services:
 
   webapi:
     image: webapi
-    build: .
+    build: backend/
     ports:
       - "8085:8080"
     depends_on:
