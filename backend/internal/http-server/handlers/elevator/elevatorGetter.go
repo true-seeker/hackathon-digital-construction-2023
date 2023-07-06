@@ -25,6 +25,7 @@ type getAllResponse struct {
 type Getter interface {
 	GetAll() ([]*entities.Elevator, error)
 	Get(id string) (*entities.Elevator, error)
+	GetByBuilding(buildingId string) ([]*entities.Elevator, error)
 }
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
@@ -67,6 +68,28 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 			return
 		}
 		getResponseOK(w, r, elevator)
+	}
+}
+
+func GetByBuilding(log *slog.Logger, getter Getter) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.url.elevator.Get"
+
+		log = log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+		buildingId := chi.URLParam(r, "building_id")
+
+		elevator, err := getter.GetByBuilding(buildingId)
+		if err != nil {
+			log.Error("failed to get elevator", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get elevator"))
+
+			return
+		}
+		getAllResponseOK(w, r, elevator)
 	}
 }
 

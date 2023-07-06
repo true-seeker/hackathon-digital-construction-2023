@@ -69,6 +69,7 @@ func main() {
 			r.Post("/", building.New(log, buildingRepository))
 			r.Get("/", building.GetAll(log, buildingRepository))
 			r.Get("/{id}", building.Get(log, buildingRepository))
+			r.Get("/{building_id}/elevators", elevator.GetByBuilding(log, elevatorRepository))
 			r.Put("/", building.Update(log, buildingRepository))
 		})
 		r.Route("/elevators", func(r chi.Router) {

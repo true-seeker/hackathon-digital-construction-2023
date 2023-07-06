@@ -72,3 +72,23 @@ func (b *ElevatorRepository) Update(request *elevator.UpdateRequest) (*entities.
 
 	return bd, nil
 }
+
+func (b *ElevatorRepository) GetByBuilding(buildingId string) ([]*entities.Elevator, error) {
+	rows, err := b.db.Query("select id,name,building_id from elevators WHERE building_id=$1", buildingId)
+	if err != nil {
+		// TODO LOGGER
+	}
+	defer rows.Close()
+	var elevators []*entities.Elevator
+
+	for rows.Next() {
+		e := entities.Elevator{}
+		err := rows.Scan(&e.Id, &e.Name, &e.BuildingId)
+		if err != nil {
+			fmt.Println(err) // TODO LOGGER
+			continue
+		}
+		elevators = append(elevators, &e)
+	}
+	return elevators, nil
+}
