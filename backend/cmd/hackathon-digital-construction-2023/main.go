@@ -42,10 +42,10 @@ func main() {
 
 	routerLib.InitRoutes(router, log, cfg)
 
-	log.Info("starting server", slog.String("address", cfg.Address))
+	log.Info("starting server", slog.String("address", cfg.HTTPServer.Address))
 
 	srv := &http.Server{
-		Addr:         cfg.Address,
+		Addr:         fmt.Sprintf("%s:%s", cfg.HTTPServer.Address, cfg.HTTPServer.Port),
 		Handler:      router,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
+		log.Error("failed to start server", err)
 	}
 
 	log.Error("server stopped")

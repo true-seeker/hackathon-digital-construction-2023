@@ -116,9 +116,9 @@ func GetByComplex(log *slog.Logger, complexService ComplexService) http.HandlerF
 
 		complexId, err := strconv.Atoi(chi.URLParam(r, "complex_id"))
 		if err != nil {
-			log.Error("failed to convert complex", sl.Err(err))
+			log.Error("failed to convert complex_id", sl.Err(err))
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("failed to convert complex"))
+			render.JSON(w, r, resp.Error("failed to convert complex_id"))
 			return
 		}
 

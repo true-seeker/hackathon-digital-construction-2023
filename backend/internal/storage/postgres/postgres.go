@@ -1,7 +1,9 @@
 package postgres
 
 import (
+	"backend/internal/config"
 	"database/sql"
+	"fmt"
 	_ "github.com/lib/pq"
 )
 
@@ -14,7 +16,12 @@ func (s *Storage) GetDb() *sql.DB {
 }
 
 func New() (*Storage, error) {
-	connStr := "user=postgres password=postgres dbname=hackathon sslmode=disable"
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+		config.Cfg.Storage.User,
+		config.Cfg.Storage.Password,
+		config.Cfg.Storage.Database,
+		config.Cfg.Storage.Address,
+		config.Cfg.Storage.Port)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
