@@ -1,6 +1,9 @@
 package weather
 
-import "backend/internal/domain/entities"
+import (
+	"backend/internal/domain/entities"
+	"time"
+)
 
 type Service struct {
 }
@@ -16,5 +19,11 @@ func (s *Service) GetWeather() (*entities.Weather, error) {
 			Unit:  entities.C,
 		},
 		Pressure: 52,
+		Precipitation: &entities.Precipitation{
+			Chance:    25,
+			Type:      entities.RAIN,
+			StartTime: time.Now(),
+			EndTime:   time.Now().Add(time.Hour * 3),
+		},
 	}, nil
 }
