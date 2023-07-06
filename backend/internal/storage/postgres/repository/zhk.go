@@ -15,26 +15,6 @@ func NewZhkRepository(db *sql.DB) *ZhkRepository {
 	return &ZhkRepository{db: db}
 }
 
-func (b *ZhkRepository) GetAll() ([]*entities.Zhk, error) {
-	rows, err := b.db.Query("select id,name from zhks")
-	if err != nil {
-		// TODO LOGGER
-	}
-	defer rows.Close()
-	var zhks []*entities.Zhk
-
-	for rows.Next() {
-		b := entities.Zhk{}
-		err := rows.Scan(&b.Id, &b.Name)
-		if err != nil {
-			fmt.Println(err) // TODO LOGGER
-			continue
-		}
-		zhks = append(zhks, &b)
-	}
-	return zhks, nil
-}
-
 func (b *ZhkRepository) Get(id string) (*entities.Zhk, error) {
 	row := b.db.QueryRow("select id, name from zhks WHERE id=$1", id)
 	var bd entities.Zhk
