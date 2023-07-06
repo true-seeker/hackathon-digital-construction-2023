@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/internal/http-server/handlers/building"
+	"backend/internal/http-server/handlers/elevator"
 	"backend/internal/storage/postgres"
 	"backend/internal/storage/postgres/repository"
 	"fmt"
@@ -42,6 +43,7 @@ func main() {
 	}
 
 	buildingRepository := repository.NewBuildingRepository(storage.GetDb())
+	elevatorRepository := repository.NewElevatorRepository(storage.GetDb())
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -63,11 +65,18 @@ func main() {
 		//r.Use(middleware.BasicAuth("hackathon-digital-construction-2023", map[string]string{
 		//	cfg.HTTPServer.User: cfg.HTTPServer.Password,
 		//}))
-
-		r.Post("/buildings", building.New(log, buildingRepository))
-		r.Get("/buildings", building.GetAll(log, buildingRepository))
-		r.Get("/buildings/{id}", building.Get(log, buildingRepository))
-		r.Put("/buildings", building.Update(log, buildingRepository))
+		r.Route("/buildings", func(r chi.Router) {
+			r.Post("/", building.New(log, buildingRepository))
+			r.Get("/", building.GetAll(log, buildingRepository))
+			r.Get("/{id}", building.Get(log, buildingRepository))
+			r.Put("/", building.Update(log, buildingRepository))
+		})
+		r.Route("/elevators", func(r chi.Router) {
+			r.Post("/", elevator.New(log, elevatorRepository))
+			r.Get("/", elevator.GetAll(log, elevatorRepository))
+			r.Get("/{id}", elevator.Get(log, elevatorRepository))
+			r.Put("/", elevator.Update(log, elevatorRepository))
+		})
 	})
 
 	log.Info("starting server", slog.String("address", cfg.Address))

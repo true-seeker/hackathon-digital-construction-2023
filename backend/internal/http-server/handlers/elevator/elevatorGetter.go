@@ -1,4 +1,4 @@
-package building
+package elevator
 
 import (
 	"backend/internal/domain/entities"
@@ -13,44 +13,44 @@ import (
 
 type getResponse struct {
 	resp.Response
-	Building *entities.Building `json:"building"`
+	Elevator *entities.Elevator `json:"elevator"`
 }
 
 type getAllResponse struct {
 	resp.Response
-	Buildings []*entities.Building `json:"buildings"`
+	Elevators []*entities.Elevator `json:"elevators"`
 }
 
-//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=buildingSaver
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=elevatorSaver
 type Getter interface {
-	GetAll() ([]*entities.Building, error)
-	Get(id string) (*entities.Building, error)
+	GetAll() ([]*entities.Elevator, error)
+	Get(id string) (*entities.Elevator, error)
 }
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.GetAll"
+		const op = "handlers.url.elevator.GetAll"
 
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		buildings, err := getter.GetAll()
+		elevators, err := getter.GetAll()
 		if err != nil {
-			log.Error("failed to get buildings", sl.Err(err))
+			log.Error("failed to get elevators", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to get buildings"))
+			render.JSON(w, r, resp.Error("failed to get elevators"))
 
 			return
 		}
-		getAllResponseOK(w, r, buildings)
+		getAllResponseOK(w, r, elevators)
 	}
 }
 
 func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.url.building.Get"
+		const op = "handlers.url.elevator.Get"
 
 		log = log.With(
 			slog.String("op", op),
@@ -58,27 +58,27 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 		)
 		id := chi.URLParam(r, "id")
 
-		building, err := getter.Get(id)
+		elevator, err := getter.Get(id)
 		if err != nil {
-			log.Error("failed to get building", sl.Err(err))
+			log.Error("failed to get elevator", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to get building"))
+			render.JSON(w, r, resp.Error("failed to get elevator"))
 
 			return
 		}
-		getResponseOK(w, r, building)
+		getResponseOK(w, r, elevator)
 	}
 }
 
-func getAllResponseOK(w http.ResponseWriter, r *http.Request, buildings []*entities.Building) {
+func getAllResponseOK(w http.ResponseWriter, r *http.Request, elevators []*entities.Elevator) {
 	render.JSON(w, r, getAllResponse{
 		Response:  resp.OK(),
-		Buildings: buildings,
+		Elevators: elevators,
 	})
 }
-func getResponseOK(w http.ResponseWriter, r *http.Request, building *entities.Building) {
+func getResponseOK(w http.ResponseWriter, r *http.Request, elevator *entities.Elevator) {
 	render.JSON(w, r, getResponse{
 		Response: resp.OK(),
-		Building: building,
+		Elevator: elevator,
 	})
 }
