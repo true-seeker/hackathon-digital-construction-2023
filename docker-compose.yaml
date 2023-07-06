@@ -21,8 +21,6 @@ services:
   webapi:
     image: webapi
     build: backend/
-    ports:
-      - "8085:8080"
     depends_on:
       database:
         condition: service_healthy
@@ -32,6 +30,16 @@ services:
     environment:
       IS_CONTAINER: true
       CONFIG_PATH: /app/config/local.yaml
+
+  nginx:
+    build: frontend/
+    ports:
+      - "80:80"
+    depends_on:
+      - webapi
+    networks:
+      some_network:
+
 
 networks:
   some_network:
