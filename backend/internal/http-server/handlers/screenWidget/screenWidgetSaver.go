@@ -18,8 +18,8 @@ type SaveRequest struct {
 
 type saveResponse struct {
 	resp.Response
-	ScreenId      string                   `json:"screen_id,omitempty"`
-	ScreenWidgets *[]entities.ScreenWidget `json:"screen_widgets,omitempty"`
+	ScreenId      string                   `json:"screen_id"`
+	ScreenWidgets *[]entities.ScreenWidget `json:"screen_widgets"`
 }
 
 type Saver interface {

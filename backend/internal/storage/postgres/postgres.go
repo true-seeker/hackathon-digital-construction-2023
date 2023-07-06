@@ -38,17 +38,11 @@ func New(storagePath string) (*Storage, error) {
 								y           integer          NOT NULL
 							);
 							
-							CREATE TABLE IF NOT EXISTS widget_types
-							(
-								id   uuid PRIMARY KEY 		NOT NULL DEFAULT gen_random_uuid(),
-								name varchar(64) UNIQUE    NOT NULL
-							);
 							
 							CREATE TABLE IF NOT EXISTS widgets
 							(
 								id      uuid PRIMARY KEY 	NOT NULL DEFAULT gen_random_uuid(),
-								name    varchar(64) UNIQUE	NOT NULL,
-								type_id uuid             	NOT NULL REFERENCES widget_types (id)
+								name    varchar(64) UNIQUE	NOT NULL
 							);
 							
 							CREATE TABLE IF NOT EXISTS screen_widgets
@@ -66,20 +60,13 @@ func New(storagePath string) (*Storage, error) {
 								static       bool                      DEFAULT FALSE,
 								deleted_date timestamp                 DEFAULT NULL
 							);
-							INSERT INTO widget_types(id,name)
-							VALUES ('161a7cb9-80b7-4504-8d9c-f08c828e41a4','Погода'),
-								   ('6846f77a-f030-45eb-a9f3-cadec01c4d51','Курсы валют'),
-								   ('18b8b45d-82fd-4733-b06e-106649c266d8','Реклама'),
-								   ('8948742d-3104-4711-9d00-749867407b34','Транспорт'),
-								   ('90caa3a5-3018-4f69-b03b-c5c313d93ed2','Новости')
-							ON CONFLICT DO NOTHING;
-
-							INSERT INTO widgets (name, type_id)
-							VALUES ('Погода', '161a7cb9-80b7-4504-8d9c-f08c828e41a4'),
-								   ('Курсы валют', '6846f77a-f030-45eb-a9f3-cadec01c4d51'),
-								   ('Реклама', '18b8b45d-82fd-4733-b06e-106649c266d8'),
-								   ('Транспорт', '8948742d-3104-4711-9d00-749867407b34'),
-								   ('Новости', '90caa3a5-3018-4f69-b03b-c5c313d93ed2') ON CONFLICT DO NOTHING;
+							INSERT INTO widgets (id, name)
+							VALUES ('d30bb91e-6718-4380-a196-9b791b26280d', 'Погода'),
+								   ('63baeddd-2a07-4f71-aa19-62ecbae26429', 'Курсы валют'),
+-- 								   ('', 'Реклама'),
+-- 								   ('', 'Транспорт'),
+								   ('d6e2f387-a6ea-471b-96c3-d46a0e7c796d', 'Время'),
+								   ('b71bef49-574e-4354-867c-ca77794172be', 'Новости') ON CONFLICT DO NOTHING;
 		`)
 	if err != nil {
 		panic(err)

@@ -53,12 +53,12 @@ func (b *BuildingRepository) Update(request *building.UpdateRequest) (*entities.
 	return bd, nil
 }
 
-func (b *BuildingRepository) GetBuildingByScreenId(screenId string) (*entities.Building, error) {
-	row := b.db.QueryRow("select buildings.id,buildings.name,address,zhk_id, latitude, longitude from buildings JOIN elevators e on buildings.id = e.building_id JOIN screens s on e.id = s.elevator_id WHERE s.id=$1", screenId)
-	var bd entities.Building
-	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId, &bd.Latitude, &bd.Longitude)
+func (b *BuildingRepository) GetBuildingIdByScreenId(screenId string) (int, error) {
+	row := b.db.QueryRow("select building_id FROM elevators e JOIN screens s on e.id = s.elevator_id WHERE s.id=$1", screenId)
+	var buildingId int
+	err := row.Scan(&buildingId)
 	if err != nil {
 		fmt.Println(err) // TODO LOGGER
 	}
-	return &bd, nil
+	return buildingId, nil
 }

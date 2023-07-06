@@ -13,7 +13,7 @@ import (
 
 type getResponse struct {
 	resp.Response
-	ScreenWidgets []*entities.ScreenWidget `json:"screen_widgets,omitempty"`
+	ScreenWidgets []*entities.ScreenWidget `json:"screen_widgets"`
 }
 
 type Getter interface {

@@ -2,11 +2,15 @@ package weather
 
 import (
 	"backend/internal/domain/entities"
+	"backend/internal/http-server/services/ujin/complexService"
 	resp "backend/internal/lib/api/response"
 	"backend/internal/lib/logger/sl"
+	"encoding/json"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
+	"io"
 	"net/http"
 )
 
@@ -15,27 +19,53 @@ type getResponse struct {
 	Weather *entities.Weather `json:"weather"`
 }
 
+type Location struct {
+	Data []LocationData `json:"data"`
+}
+
+type LocationData struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+}
+
 type Getter interface {
-	GetWeather(building *entities.Building) (*entities.Weather, error)
+	GetWeather(locationData LocationData) (*entities.Weather, error)
 }
 
 type BuildingGetter interface {
-	GetBuildingByScreenId(screenId string) (*entities.Building, error)
+	GetBuildingIdByScreenId(screenId string) (int, error)
 }
 
-func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO weather by region
-		screenId := chi.URLParam(r, "screen_id")
-		building, err := buildingGetter.GetBuildingByScreenId(screenId)
-		if err != nil {
-			log.Error("failed to get building", sl.Err(err))
+type ComplexService interface {
+	GetBuildingById(buildingId int) (*complexService.BuildingInfo, error)
+}
 
-			render.JSON(w, r, resp.Error("failed to get building"))
+func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, complexService ComplexService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		screenId := chi.URLParam(r, "screen_id")
+
+		buildingId, err := buildingGetter.GetBuildingIdByScreenId(screenId)
+		if err != nil {
+			log.Error("failed to get buildingId", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get buildingId"))
 
 			return
 		}
-		weather, err := getter.GetWeather(building)
+		buildingInfo, err := complexService.GetBuildingById(buildingId)
+		if err != nil {
+			log.Error("failed to get buildingInfo", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get buildingInfo"))
+
+			return
+		}
+		location := getLocationByAddress(buildingInfo.Address.FullAddress)
+		var locationData LocationData
+		if len(location.Data) > 0 {
+			locationData = location.Data[0]
+		}
+		weather, err := getter.GetWeather(locationData)
 
 		if err != nil {
 			log.Error("failed to get weather", sl.Err(err))
@@ -47,6 +77,28 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter) 
 
 		getResponseOK(w, r, weather)
 	}
+}
+
+func getLocationByAddress(address string) Location {
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "http://api.positionstack.com/v1/forward?"+
+		"access_key=ea9717bef2ef10ba7075c1f42e99be2a"+
+		"& query="+address, nil)
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err) // TODO LOGGER
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	var location Location
+
+	err = json.Unmarshal(body, &location)
+	if err != nil {
+		fmt.Println(err) // TODO LOGGER
+	}
+
+	return location
 }
 
 func getResponseOK(w http.ResponseWriter, r *http.Request, weather *entities.Weather) {

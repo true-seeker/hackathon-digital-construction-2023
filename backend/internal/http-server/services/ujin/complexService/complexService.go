@@ -62,3 +62,16 @@ func (s *Service) GetComplexes() (Complex, error) {
 	fmt.Println(complex)
 	return complex, nil
 }
+
+func (s *Service) GetBuildingById(buildingId int) (*BuildingInfo, error) {
+	complex, err := s.GetComplexes()
+	if err != nil {
+		fmt.Println(err) // TODO LOGGER
+	}
+	for _, building := range complex.Data.Buildings {
+		if building.Id == buildingId {
+			return &building.BuildingInfo, nil
+		}
+	}
+	return nil, err
+}

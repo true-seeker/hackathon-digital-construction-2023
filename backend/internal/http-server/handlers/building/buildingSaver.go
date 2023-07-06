@@ -2,9 +2,6 @@ package building
 
 import (
 	"backend/internal/domain/entities"
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -27,15 +24,6 @@ type SaveRequest struct {
 type saveResponse struct {
 	resp.Response
 	Building *entities.Building `json:"building"`
-}
-
-type Location struct {
-	Data []LocationData `json:"data"`
-}
-
-type LocationData struct {
-	Latitude  float32 `json:"latitude"`
-	Longitude float32 `json:"longitude"`
 }
 
 //go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=buildingSaver
@@ -74,11 +62,6 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 
 			return
 		}
-		location := getLocationByAddress(req.Address)
-		if len(location.Data) > 0 {
-			req.Latitude = location.Data[0].Latitude
-			req.Longitude = location.Data[0].Longitude
-		}
 		building, err := saver.New(&req)
 		if err != nil {
 			log.Error("failed to add building", sl.Err(err))
@@ -92,28 +75,6 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 
 		saverResponseOK(w, r, building)
 	}
-}
-
-func getLocationByAddress(address string) Location {
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://api.positionstack.com/v1/forward?"+
-		"access_key=ea9717bef2ef10ba7075c1f42e99be2a"+
-		"& query="+address, nil)
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err) // TODO LOGGER
-	}
-
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	var location Location
-
-	err = json.Unmarshal(body, &location)
-	if err != nil {
-		fmt.Println(err) // TODO LOGGER
-	}
-
-	return location
 }
 
 func saverResponseOK(w http.ResponseWriter, r *http.Request, building *entities.Building) {
