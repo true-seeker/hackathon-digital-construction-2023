@@ -1,7 +1,5 @@
 package entities
 
-import "time"
-
 const (
 	C = "C"
 	F = "F"
@@ -13,19 +11,15 @@ const (
 )
 
 type Weather struct {
-	Temperature   *Temperature   `json:"temperature,omitempty"`
-	Pressure      float32        `json:"pressure,omitempty"`
-	Precipitation *Precipitation `json:"precipitation,omitempty"`
+	TemperatureNow Temperature `json:"temperature_now"`
+	Pressure       int         `json:"pressure"`
+	Condition      string      `json:"condition"`
+	FeelsLike      int         `json:"feels_like"`
+	Forecast       []Temperature
 }
 
 type Temperature struct {
-	Value float32 `json:"value,omitempty"`
-	Unit  string  `json:"unit,omitempty"`
-}
-
-type Precipitation struct {
-	Chance    int       `json:"chance,omitempty"`
-	Type      string    `json:"type,omitempty"`
-	StartTime time.Time `json:"start_time,omitempty"`
-	EndTime   time.Time `json:"end_time,omitempty"`
+	Value     int    `json:"value"`
+	Date      string `json:"date"`
+	Condition string `json:"condition"`
 }
