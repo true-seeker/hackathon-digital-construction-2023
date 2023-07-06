@@ -20,7 +20,6 @@ type Getter interface {
 
 func GetCurrencies(log *slog.Logger, getter Getter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO weather by region
 		currencies, err := getter.GetCurrency()
 
 		if err != nil {

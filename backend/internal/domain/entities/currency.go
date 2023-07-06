@@ -1,6 +1,6 @@
 package entities
 
 type Currency struct {
-	Name  string  `json:"name,omitempty"`
-	Value float32 `json:"value,omitempty"`
+	Name  string  `json:"name"`
+	Value float32 `json:"value"`
 }
