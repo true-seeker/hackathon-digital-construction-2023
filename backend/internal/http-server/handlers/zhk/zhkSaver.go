@@ -68,7 +68,7 @@ func New(log *slog.Logger, saver Saver) http.HandlerFunc {
 			return
 		}
 
-		log.Info("zhk added", slog.String("id", zhk.Id))
+		log.Info("zhk added", slog.Int("id", zhk.Id))
 
 		saverResponseOK(w, r, zhk)
 	}

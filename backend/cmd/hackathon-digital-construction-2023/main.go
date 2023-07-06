@@ -9,6 +9,7 @@ import (
 	transportWidghet "backend/internal/http-server/handlers/widget/transport"
 	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
 	"backend/internal/http-server/handlers/zhk"
+	"backend/internal/http-server/services/ujin/complexService"
 	"backend/internal/http-server/services/widget/currency"
 	"backend/internal/http-server/services/widget/transport"
 	"backend/internal/http-server/services/widget/weather"
@@ -60,6 +61,7 @@ func main() {
 	weatherService := weather.NewWeatherYandexService()
 	currencyService := currency.NewCurrencyService()
 	transportService := transport.NewTransportService()
+	complexSrvc := complexService.NewComplexService("ust-738975-7546d637ccea657af49f1eeecd9e4806")
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -83,8 +85,8 @@ func main() {
 		//}))
 		r.Route("/buildings", func(r chi.Router) {
 			r.Post("/", building.New(log, buildingRepository))
-			r.Get("/", building.GetAll(log, buildingRepository))
-			r.Get("/{id}", building.Get(log, buildingRepository))
+			r.Get("/", building.GetAll(log, complexSrvc))
+			r.Get("/{id}", building.Get(log, complexSrvc))
 			r.Get("/{building_id}/elevators", elevator.GetByBuilding(log, elevatorRepository))
 			r.Put("/", building.Update(log, buildingRepository))
 		})
@@ -110,9 +112,9 @@ func main() {
 
 		r.Route("/zhks", func(r chi.Router) {
 			r.Post("/", zhk.New(log, zhkRepository))
-			r.Get("/", zhk.GetAll(log, zhkRepository))
+			r.Get("/", zhk.GetAll(log, complexSrvc))
 			r.Get("/{id}", zhk.Get(log, zhkRepository))
-			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
+			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, complexSrvc))
 			r.Put("/", zhk.Update(log, zhkRepository))
 		})
 

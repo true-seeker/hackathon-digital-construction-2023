@@ -71,7 +71,7 @@ func Update(log *slog.Logger, updater Updater) http.HandlerFunc {
 			return
 		}
 
-		log.Info("building added", slog.String("id", building.Id))
+		log.Info("building added", slog.Int("id", building.Id))
 
 		saverResponseOK(w, r, building)
 	}

@@ -1,6 +1,6 @@
 package entities
 
 type Zhk struct {
-	Id   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }

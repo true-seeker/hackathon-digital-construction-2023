@@ -2,6 +2,7 @@ package building
 
 import (
 	"backend/internal/domain/entities"
+	"backend/internal/http-server/services/ujin/complexService"
 	resp "backend/internal/lib/api/response"
 	"backend/internal/lib/logger/sl"
 	"github.com/go-chi/chi/v5"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
 	"net/http"
+	"strconv"
 )
 
 type getResponse struct {
@@ -18,17 +20,20 @@ type getResponse struct {
 
 type getAllResponse struct {
 	resp.Response
-	Buildings []*entities.Building `json:"buildings"`
+	Buildings *[]entities.Building `json:"buildings"`
 }
 
 //go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=buildingSaver
 type Getter interface {
 	GetAll() ([]*entities.Building, error)
 	Get(id string) (*entities.Building, error)
-	GetByZhk(id string) ([]*entities.Building, error)
 }
 
-func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
+type ComplexService interface {
+	GetComplexes() (complexService.Complex, error)
+}
+
+func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.building.GetAll"
 
@@ -37,19 +42,34 @@ func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		buildings, err := getter.GetAll()
+		complex, err := complexService.GetComplexes()
 		if err != nil {
-			log.Error("failed to get buildings", sl.Err(err))
+			log.Error("failed to get complexes", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to get buildings"))
+			render.JSON(w, r, resp.Error("failed to get complexes"))
 
 			return
 		}
-		getAllResponseOK(w, r, buildings)
+
+		var buildingEntities []entities.Building
+		buildingMap := make(map[int]entities.Building)
+		for _, building := range complex.Data.Buildings {
+			buildingMap[building.Id] = entities.Building{
+				Id:      building.Id,
+				Name:    building.BuildingInfo.Title,
+				Address: building.BuildingInfo.Address.FullAddress,
+				ZhkId:   building.Complex.Id,
+			}
+		}
+
+		for _, value := range buildingMap {
+			buildingEntities = append(buildingEntities, value)
+		}
+		getAllResponseOK(w, r, &buildingEntities)
 	}
 }
 
-func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
+func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.building.Get"
 
@@ -57,43 +77,94 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
-		id := chi.URLParam(r, "id")
-
-		building, err := getter.Get(id)
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			log.Error("failed to get building", sl.Err(err))
+			log.Error("failed to convert id", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to get building"))
+			render.JSON(w, r, resp.Error("failed to convert id"))
 
 			return
 		}
-		getResponseOK(w, r, building)
+		//
+		//building, err := getter.Get(id)
+		//if err != nil {
+		//	log.Error("failed to get building", sl.Err(err))
+		//
+		//	render.JSON(w, r, resp.Error("failed to get building"))
+		//
+		//	return
+		//}
+		//getResponseOK(w, r, building)
+
+		complex, err := complexService.GetComplexes()
+		if err != nil {
+			log.Error("failed to get complexes", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get complexes"))
+
+			return
+		}
+
+		for _, building := range complex.Data.Buildings {
+			if building.Id == id {
+				getResponseOK(w, r, &entities.Building{
+					Id:      building.Id,
+					Name:    building.BuildingInfo.Title,
+					Address: building.BuildingInfo.Address.FullAddress,
+					ZhkId:   building.Complex.Id,
+				})
+				break
+			}
+		}
 	}
 }
 
-func GetByZhk(log *slog.Logger, getter Getter) http.HandlerFunc {
+func GetByZhk(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.buildings.Get"
-
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
-		zhk_id := chi.URLParam(r, "zhk_id")
-
-		buildings, err := getter.GetByZhk(zhk_id)
+		zhk_id, err := strconv.Atoi(chi.URLParam(r, "zhk_id"))
 		if err != nil {
-			log.Error("failed to get buildings", sl.Err(err))
+			log.Error("failed to convert zhk", sl.Err(err))
 
-			render.JSON(w, r, resp.Error("failed to get buildings"))
+			render.JSON(w, r, resp.Error("failed to convert zhk"))
 
 			return
 		}
-		getAllResponseOK(w, r, buildings)
+
+		complex, err := complexService.GetComplexes()
+		if err != nil {
+			log.Error("failed to get complexes", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get complexes"))
+
+			return
+		}
+
+		var buildingEntities []entities.Building
+		buildingMap := make(map[int]entities.Building)
+		for _, building := range complex.Data.Buildings {
+			if building.Complex.Id == zhk_id {
+				buildingMap[building.Id] = entities.Building{
+					Id:      building.Id,
+					Name:    building.BuildingInfo.Title,
+					Address: building.BuildingInfo.Address.FullAddress,
+					ZhkId:   zhk_id,
+				}
+			}
+		}
+
+		for _, value := range buildingMap {
+			buildingEntities = append(buildingEntities, value)
+		}
+		getAllResponseOK(w, r, &buildingEntities)
 	}
 }
 
-func getAllResponseOK(w http.ResponseWriter, r *http.Request, buildings []*entities.Building) {
+func getAllResponseOK(w http.ResponseWriter, r *http.Request, buildings *[]entities.Building) {
 	render.JSON(w, r, getAllResponse{
 		Response:  resp.OK(),
 		Buildings: buildings,
