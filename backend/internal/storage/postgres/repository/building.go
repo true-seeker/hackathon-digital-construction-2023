@@ -72,3 +72,14 @@ func (b *BuildingRepository) Update(request *building.UpdateRequest) (*entities.
 
 	return bd, nil
 }
+
+func (b *BuildingRepository) GetByZhk(id string) (*entities.Building, error) {
+	row := b.db.QueryRow("select id, name, address, zhk_id from buildings WHERE zhk_id=$1", id)
+	var bd entities.Building
+	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId)
+	if err != nil {
+		fmt.Println(err) // TODO LOGGER
+	}
+
+	return &bd, nil
+}

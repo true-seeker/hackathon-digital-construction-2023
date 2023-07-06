@@ -25,6 +25,7 @@ type getAllResponse struct {
 type Getter interface {
 	GetAll() ([]*entities.Building, error)
 	Get(id string) (*entities.Building, error)
+	GetByZhk(id string) (*entities.Building, error)
 }
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
@@ -67,6 +68,28 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 			return
 		}
 		getResponseOK(w, r, building)
+	}
+}
+
+func GetByZhk(log *slog.Logger, getter Getter) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.url.zhk.Get"
+
+		log = log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+		zhk_id := chi.URLParam(r, "zhk_id")
+
+		zhk, err := getter.GetByZhk(zhk_id)
+		if err != nil {
+			log.Error("failed to get zhk", sl.Err(err))
+
+			render.JSON(w, r, resp.Error("failed to get zhk"))
+
+			return
+		}
+		getResponseOK(w, r, zhk)
 	}
 }
 

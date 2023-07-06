@@ -95,6 +95,7 @@ func main() {
 			r.Post("/", zhk.New(log, zhkRepository))
 			r.Get("/", zhk.GetAll(log, zhkRepository))
 			r.Get("/{id}", zhk.Get(log, zhkRepository))
+			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
 			r.Put("/", zhk.Update(log, zhkRepository))
 		})
 	})
