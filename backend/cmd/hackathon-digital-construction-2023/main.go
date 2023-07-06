@@ -117,7 +117,7 @@ func main() {
 		})
 
 		r.Route("/widgets", func(r chi.Router) {
-			r.Get("/weather", weatherWidghet.GetWeather(log, weatherService))
+			r.Get("/weather/{screen_id}", weatherWidghet.GetWeather(log, weatherService, buildingRepository))
 			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
 			r.Get("/transport", transportWidghet.GetTransport(log, transportService))
 		})

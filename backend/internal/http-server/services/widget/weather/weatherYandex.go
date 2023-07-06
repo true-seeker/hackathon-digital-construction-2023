@@ -44,9 +44,9 @@ type DayShort struct {
 	Condition string `json:"condition"`
 }
 
-func (s *ServiceYandex) GetWeather() (*entities.Weather, error) {
+func (s *ServiceYandex) GetWeather(building *entities.Building) (*entities.Weather, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "https://api.weather.yandex.ru/v2/forecast?lat=55.75396&lon=37.620393", nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("https://api.weather.yandex.ru/v2/forecast?lat=%f&lon=%f", building.Latitude, building.Longitude), nil)
 	req.Header.Set("X-Yandex-API-Key", "ad8382a6-0730-45fe-a069-7285cedf1dd7")
 	resp, err := client.Do(req)
 	if err != nil {
