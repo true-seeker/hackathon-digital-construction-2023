@@ -12,6 +12,7 @@ import (
 )
 
 type SaveRequest struct {
+	ScreenId      string                   `json:"screen_id" validate:"required"`
 	ScreenWidgets *[]entities.ScreenWidget `json:"screen_widgets" validate:"required"`
 }
 

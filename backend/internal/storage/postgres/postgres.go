@@ -69,11 +69,15 @@ func New(storagePath string) (*Storage, error) {
 							(
 								id           uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
 								screen_id    uuid             NOT NULL REFERENCES screens (id),
-								widget_id    uuid             NOT NULL REFERENCES widgets (id),
+								i            uuid             NOT NULL REFERENCES widgets (id),
 								x            int              NOT NULL,
-    							y            int              NOT NULL,
-								x_size       int              NOT NULL,
-								y_size       int              NOT NULL,
+								y            int              NOT NULL,
+								w            int              NOT NULL,
+								h            int              NOT NULL,
+								min_w        int              NOT NULL,
+								min_h        int              NOT NULL,
+								moved        bool                      DEFAULT FALSE,
+								static       bool                      DEFAULT FALSE,
 								deleted_date timestamp                 DEFAULT NULL
 							);
 							INSERT INTO widget_types(name)

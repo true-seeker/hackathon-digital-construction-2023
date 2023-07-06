@@ -57,7 +57,7 @@ func main() {
 	zhkRepository := repository.NewZhkRepository(storage.GetDb())
 	screenWidgetRepository := repository.NewScreenWidgetRepository(storage.GetDb())
 
-	weatherService := weather.NewWeatherService()
+	weatherService := weather.NewWeatherYandexService()
 	currencyService := currency.NewCurrencyService()
 	transportService := transport.NewTransportService()
 

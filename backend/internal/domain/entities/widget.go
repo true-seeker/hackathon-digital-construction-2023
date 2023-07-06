@@ -14,12 +14,16 @@ type Widget struct {
 }
 
 type ScreenWidget struct {
-	Id          string    `json:"id,omitempty"`
-	ScreenId    string    `json:"screen_id,omitempty"`
-	WidgetId    string    `json:"widget_id,omitempty"`
-	X           int       `json:"x,omitempty"`
-	Y           int       `json:"y,omitempty"`
-	XSize       int       `json:"x_size,omitempty"`
-	YSize       int       `json:"y_size,omitempty"`
+	Id          string    `json:"id"`
+	ScreenId    string    `json:"screen_id"`
+	I           string    `json:"i"`
+	X           int       `json:"x"`
+	Y           int       `json:"y"`
+	W           int       `json:"w"`
+	H           int       `json:"h"`
+	MinW        int       `json:"min_w"`
+	MinH        int       `json:"min_h"`
+	Moved       bool      `json:"moved"`
+	Static      bool      `json:"static"`
 	DeletedDate time.Time `json:"deleted_date"`
 }
