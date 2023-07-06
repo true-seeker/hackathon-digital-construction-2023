@@ -55,14 +55,14 @@ func (s *ServiceYandex) GetWeather() (*entities.Weather, error) {
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
-	var smth1 YandexWeather
-	err = json.Unmarshal(body, &smth1)
+	var yandexWeather YandexWeather
+	err = json.Unmarshal(body, &yandexWeather)
 	if err != nil {
 		fmt.Println(err) // TODO LOGGER
 	}
 	var weather entities.Weather
 
-	for _, date := range smth1.Forecasts {
+	for _, date := range yandexWeather.Forecasts {
 		weather.Forecast = append(weather.Forecast, entities.Temperature{
 			Value:     date.Parts.DayShort.Temp,
 			Date:      date.Date,
@@ -71,11 +71,11 @@ func (s *ServiceYandex) GetWeather() (*entities.Weather, error) {
 	}
 
 	weather.TemperatureNow = entities.Temperature{
-		Value: smth1.Fact.Temp,
+		Value: yandexWeather.Fact.Temp,
 	}
-	weather.FeelsLike = smth1.Fact.FeelsLike
-	weather.Condition = smth1.Fact.Condition
-	weather.Pressure = smth1.Info.DefPRessureMm
+	weather.FeelsLike = yandexWeather.Fact.FeelsLike
+	weather.Condition = yandexWeather.Fact.Condition
+	weather.Pressure = yandexWeather.Info.DefPRessureMm
 
 	return &weather, nil
 }

@@ -36,9 +36,9 @@ func (b *BuildingRepository) GetAll() ([]*entities.Building, error) {
 }
 
 func (b *BuildingRepository) Get(id string) (*entities.Building, error) {
-	row := b.db.QueryRow("select id, name, address, zhk_id from buildings WHERE id=$1", id)
+	row := b.db.QueryRow("select id, name, address, zhk_id,latitude, longitude from buildings WHERE id=$1", id)
 	var bd entities.Building
-	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId)
+	err := row.Scan(&bd.Id, &bd.Name, &bd.Address, &bd.ZhkId, &bd.Latitude, &bd.Longitude)
 	if err != nil {
 		fmt.Println(err) // TODO LOGGER
 	}
@@ -48,8 +48,8 @@ func (b *BuildingRepository) Get(id string) (*entities.Building, error) {
 
 func (b *BuildingRepository) New(request *building.SaveRequest) (*entities.Building, error) {
 	id := ""
-	_ = b.db.QueryRow("insert into buildings (name, address, zhk_id) values ($1, $2, $3) RETURNING id",
-		request.Name, request.Address, request.ZhkId).Scan(&id)
+	_ = b.db.QueryRow("insert into buildings (name, address, zhk_id, latitude, longitude) values ($1, $2, $3, $4, $5) RETURNING id",
+		request.Name, request.Address, request.ZhkId, request.Latitude, request.Longitude).Scan(&id)
 
 	bd, err := b.Get(id)
 	if err != nil {

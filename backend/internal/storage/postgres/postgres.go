@@ -30,10 +30,11 @@ func New(storagePath string) (*Storage, error) {
 							
 							CREATE TABLE IF NOT EXISTS buildings
 							(
-								id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								name    varchar(64),
-								address varchar(512),
-								zhk_id  uuid             NOT NULL REFERENCES zhks (id)
+								id        uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+								name      varchar(64),
+								address   varchar(512),
+								latitude  float                     DEFAULT 0,
+								longitude float                     DEFAULT 0
 							);
 							
 							CREATE TABLE IF NOT EXISTS elevators
