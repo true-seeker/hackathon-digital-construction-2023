@@ -18,7 +18,7 @@ type getResponse struct {
 
 type getAllResponse struct {
 	resp.Response
-	Screens []*entities.Screen `json:"screen"`
+	Screens []*entities.Screen `json:"screens"`
 }
 
 //go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=screenSaver

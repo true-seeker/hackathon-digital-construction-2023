@@ -113,8 +113,6 @@ func main() {
 			r.Get("/weather", weatherWidghet.GetWeather(log, weatherService))
 			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
 			r.Get("/transport", transportWidghet.GetTransport(log, transportService))
-			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
-			r.Put("/", zhk.Update(log, zhkRepository))
 		})
 	})
 

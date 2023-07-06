@@ -43,7 +43,7 @@ func New(storagePath string) (*Storage, error) {
 								name        varchar(64)      NOT NULL
 							);
 							
-							CREATE TABLE IF NOT EXISTS screen
+							CREATE TABLE IF NOT EXISTS screens
 							(
 								id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
 								elevator_id uuid             NOT NULL REFERENCES elevators (id),
@@ -54,11 +54,11 @@ func New(storagePath string) (*Storage, error) {
 							
 							CREATE TABLE IF NOT EXISTS widget_types
 							(
-								id   uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								name varchar(64)      NOT NULL
+								id   uuid PRIMARY KEY 		NOT NULL DEFAULT gen_random_uuid(),
+								name varchar(64) UNIQUE    NOT NULL
 							);
 							
-							CREATE TABLE IF NOT EXISTS widget
+							CREATE TABLE IF NOT EXISTS widgets
 							(
 								id      uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
 								name    varchar(64)      NOT NULL,
@@ -68,10 +68,19 @@ func New(storagePath string) (*Storage, error) {
 							CREATE TABLE IF NOT EXISTS screen_widgets
 							(
 								id           uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								screen_id    uuid             NOT NULL REFERENCES screen (id),
-								widget_id    uuid             NOT NULL REFERENCES widget (id),
+								screen_id    uuid             NOT NULL REFERENCES screens (id),
+								widget_id    uuid             NOT NULL REFERENCES widgets (id),
+								x            int              NOT NULL,
+    							y            int              NOT NULL,
 								deleted_date timestamp                 DEFAULT NULL
 							);
+							INSERT INTO widget_types(name)
+							VALUES ('Погода'),
+								   ('Курсы валют'),
+								   ('Реклама'),
+								   ('Транспорт'),
+								   ('Новости')
+							ON CONFLICT DO NOTHING;
 		`)
 	if err != nil {
 		panic(err)
