@@ -25,7 +25,6 @@ type getAllResponse struct {
 
 //go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=zhkSaver
 type Getter interface {
-	GetAll() ([]*entities.Zhk, error)
 	Get(id string) (*entities.Zhk, error)
 }
 

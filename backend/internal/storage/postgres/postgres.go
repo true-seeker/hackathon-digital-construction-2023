@@ -22,25 +22,10 @@ func New(storagePath string) (*Storage, error) {
 
 	_, err = db.Exec(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 							
-							CREATE TABLE IF NOT EXISTS zhks
-							(
-								id   uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								name varchar(64)
-							);
-							
-							CREATE TABLE IF NOT EXISTS buildings
-							(
-								id        uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								name      varchar(64),
-								address   varchar(512),
-								latitude  float                     DEFAULT 0,
-								longitude float                     DEFAULT 0
-							);
-							
 							CREATE TABLE IF NOT EXISTS elevators
 							(
 								id          uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-								building_id uuid             NOT NULL REFERENCES buildings (id),
+								building_id integer          NOT NULL ,
 								name        varchar(64)      NOT NULL
 							);
 							
@@ -81,12 +66,12 @@ func New(storagePath string) (*Storage, error) {
 								static       bool                      DEFAULT FALSE,
 								deleted_date timestamp                 DEFAULT NULL
 							);
-							INSERT INTO widget_types(name)
-							VALUES ('Погода'),
-								   ('Курсы валют'),
-								   ('Реклама'),
-								   ('Транспорт'),
-								   ('Новости')
+							INSERT INTO widget_types(id,name)
+							VALUES ('161a7cb9-80b7-4504-8d9c-f08c828e41a4','Погода'),
+								   ('6846f77a-f030-45eb-a9f3-cadec01c4d51','Курсы валют'),
+								   ('18b8b45d-82fd-4733-b06e-106649c266d8','Реклама'),
+								   ('8948742d-3104-4711-9d00-749867407b34','Транспорт'),
+								   ('90caa3a5-3018-4f69-b03b-c5c313d93ed2','Новости')
 							ON CONFLICT DO NOTHING;
 
 							INSERT INTO widgets (name, type_id)
