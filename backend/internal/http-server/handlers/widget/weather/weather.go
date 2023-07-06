@@ -40,9 +40,19 @@ type ComplexService interface {
 	GetBuildingById(buildingId int) (*complexService.BuildingInfo, error)
 }
 
+var weatherCache map[string]*entities.Weather
+
 func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if weatherCache == nil {
+			weatherCache = make(map[string]*entities.Weather)
+		}
 		screenId := chi.URLParam(r, "screen_id")
+		weather, ok := weatherCache[screenId]
+		if ok {
+			getResponseOK(w, r, weather)
+			return
+		}
 
 		buildingId, err := buildingGetter.GetBuildingIdByScreenId(screenId)
 		if err != nil {
@@ -65,7 +75,7 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, 
 		if len(location.Data) > 0 {
 			locationData = location.Data[0]
 		}
-		weather, err := getter.GetWeather(locationData)
+		weather, err = getter.GetWeather(locationData)
 
 		if err != nil {
 			log.Error("failed to get weather", sl.Err(err))
@@ -75,6 +85,7 @@ func GetWeather(log *slog.Logger, getter Getter, buildingGetter BuildingGetter, 
 			return
 		}
 
+		weatherCache[screenId] = weather
 		getResponseOK(w, r, weather)
 	}
 }

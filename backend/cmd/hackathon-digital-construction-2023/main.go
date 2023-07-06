@@ -6,11 +6,13 @@ import (
 	"backend/internal/http-server/handlers/screen"
 	"backend/internal/http-server/handlers/screenWidget"
 	currencyWidghet "backend/internal/http-server/handlers/widget/currency"
+	newsWidghet "backend/internal/http-server/handlers/widget/news"
 	transportWidghet "backend/internal/http-server/handlers/widget/transport"
 	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
 	"backend/internal/http-server/handlers/zhk"
 	"backend/internal/http-server/services/ujin/complexService"
 	"backend/internal/http-server/services/widget/currency"
+	"backend/internal/http-server/services/widget/news"
 	"backend/internal/http-server/services/widget/transport"
 	"backend/internal/http-server/services/widget/weather"
 	"backend/internal/storage/postgres"
@@ -62,6 +64,7 @@ func main() {
 	currencyService := currency.NewCurrencyService()
 	transportService := transport.NewTransportService()
 	complexSrvc := complexService.NewComplexService("ust-738975-7546d637ccea657af49f1eeecd9e4806")
+	newsService := news.NewNewsService("ust-739005-c8bb190f92541a2c1e839b98cbc469c9")
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -122,7 +125,7 @@ func main() {
 			r.Get("/weather/{screen_id}", weatherWidghet.GetWeather(log, weatherService, buildingRepository, complexSrvc))
 			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
 			r.Get("/transport", transportWidghet.GetTransport(log, transportService))
-			r.Get("/news/{screen_id}", transportWidghet.GetTransport(log, transportService))
+			r.Get("/news/{screen_id}", newsWidghet.GetNews(log, newsService, buildingRepository))
 		})
 	})
 
