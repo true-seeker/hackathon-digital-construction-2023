@@ -1,6 +1,7 @@
 package complexService
 
 import (
+	"backend/internal/config"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +46,7 @@ type BuildingAddress struct {
 
 func (s *Service) GetComplexes() (*Complex, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/buildings/get-list-crm?token=%s", s.token), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/buildings/get-list-crm?token=%s", config.Cfg, s.token), nil)
 	if err != nil {
 		return nil, err
 	}

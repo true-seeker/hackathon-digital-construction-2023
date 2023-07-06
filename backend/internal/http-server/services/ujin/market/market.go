@@ -1,6 +1,7 @@
 package market
 
 import (
+	"backend/internal/config"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -50,7 +51,7 @@ func (s *Service) GetMarketOffers() (*MarketOffers, error) {
 	}}
 
 	jsonBody, _ := json.Marshal(requestBody)
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v2/client/resident/marketplace/offers/list"), bytes.NewBuffer(jsonBody))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/api/v2/client/resident/marketplace/offers/list", config.Cfg), bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
 		return nil, err

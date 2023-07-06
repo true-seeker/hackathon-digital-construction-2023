@@ -1,6 +1,7 @@
 package router
 
 import (
+	"backend/internal/config"
 	"backend/internal/http-server/handlers/building"
 	"backend/internal/http-server/handlers/complex"
 	"backend/internal/http-server/handlers/elevator"
@@ -23,7 +24,7 @@ import (
 	"os"
 )
 
-func InitRoutes(router *chi.Mux, log *slog.Logger) {
+func InitRoutes(router *chi.Mux, log *slog.Logger, cfg *config.Config) {
 	storage, err := postgres.New()
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
@@ -37,9 +38,9 @@ func InitRoutes(router *chi.Mux, log *slog.Logger) {
 
 	weatherService := weather.NewWeatherYandexService()
 	currencyService := currency.NewCurrencyService()
-	complexSrvc := complexService.NewComplexService("ust-738975-7546d637ccea657af49f1eeecd9e4806")
-	newsService := news.NewNewsService("ust-739005-c8bb190f92541a2c1e839b98cbc469c9")
-	marketService := market.NewMarketService("ust-739005-c8bb190f92541a2c1e839b98cbc469c9")
+	complexSrvc := complexService.NewComplexService(cfg.Ujin.UserToken)
+	newsService := news.NewNewsService(cfg.Ujin.AdminToken)
+	marketService := market.NewMarketService(cfg.Ujin.AdminToken)
 
 	router.Route("/api", func(r chi.Router) {
 		r.Route("/buildings", func(r chi.Router) {

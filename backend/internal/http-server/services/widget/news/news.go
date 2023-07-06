@@ -1,6 +1,7 @@
 package news
 
 import (
+	"backend/internal/config"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -30,7 +31,7 @@ type NewsItems struct {
 
 func (s *Service) GetNews(buildingId int) (*News, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://api-uae-test.ujin.tech/api/v1/news/list?token=%s&d&buildings=%d&type=news", s.token, buildingId), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/news/list?token=%s&d&buildings=%d&type=news", config.Cfg, s.token, buildingId), nil)
 	if err != nil {
 		return nil, err
 	}
