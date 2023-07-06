@@ -1,8 +1,11 @@
 package main
 
 import (
-	"backend/internal/http-server/handlers/url/save"
+	"backend/internal/http-server/handlers/building"
+	"backend/internal/storage/postgres"
+	"backend/internal/storage/postgres/repository"
 	"fmt"
+	"github.com/go-chi/cors"
 	"net/http"
 	"os"
 
@@ -14,7 +17,6 @@ import (
 	mwLogger "backend/internal/http-server/middleware/logger"
 	"backend/internal/lib/logger/handlers/slogpretty"
 	"backend/internal/lib/logger/sl"
-	"backend/internal/storage/sqlite"
 )
 
 const (
@@ -33,14 +35,23 @@ func main() {
 		slog.String("version", "123"),
 	)
 
-	storage, err := sqlite.New(cfg.StoragePath)
-	_ = storage
+	storage, err := postgres.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
 
+	buildingRepository := repository.NewBuildingRepository(storage.GetDb())
+
 	router := chi.NewRouter()
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
@@ -48,12 +59,15 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Route("/url", func(r chi.Router) {
-		//r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+	router.Route("/api", func(r chi.Router) {
+		//r.Use(middleware.BasicAuth("hackathon-digital-construction-2023", map[string]string{
 		//	cfg.HTTPServer.User: cfg.HTTPServer.Password,
 		//}))
 
-		r.Post("/", save.New(log, storage))
+		r.Post("/buildings", building.New(log, buildingRepository))
+		r.Get("/buildings", building.GetAll(log, buildingRepository))
+		r.Get("/buildings/{id}", building.Get(log, buildingRepository))
+		r.Put("/buildings", building.Update(log, buildingRepository))
 	})
 
 	log.Info("starting server", slog.String("address", cfg.Address))
