@@ -26,7 +26,6 @@ func MustLoad() *Config {
 		configPath = "config/local.yaml"
 	}
 
-	// check if file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)
 	}
