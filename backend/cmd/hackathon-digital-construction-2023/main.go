@@ -5,11 +5,13 @@ import (
 	"backend/internal/http-server/handlers/elevator"
 	"backend/internal/http-server/handlers/screen"
 	"backend/internal/http-server/handlers/screenWidget"
-	currencyWidghet "backend/internal/http-server/handlers/widget/currency"
-	newsWidghet "backend/internal/http-server/handlers/widget/news"
-	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
+	currencyWidget "backend/internal/http-server/handlers/widget/currency"
+	marketWidget "backend/internal/http-server/handlers/widget/market"
+	newsWidget "backend/internal/http-server/handlers/widget/news"
+	weatherWidget "backend/internal/http-server/handlers/widget/weather"
 	"backend/internal/http-server/handlers/zhk"
 	"backend/internal/http-server/services/ujin/complexService"
+	"backend/internal/http-server/services/ujin/market"
 	"backend/internal/http-server/services/widget/currency"
 	"backend/internal/http-server/services/widget/news"
 	"backend/internal/http-server/services/widget/weather"
@@ -62,6 +64,7 @@ func main() {
 	currencyService := currency.NewCurrencyService()
 	complexSrvc := complexService.NewComplexService("ust-738975-7546d637ccea657af49f1eeecd9e4806")
 	newsService := news.NewNewsService("ust-739005-c8bb190f92541a2c1e839b98cbc469c9")
+	marketService := market.NewMarketService("ust-739005-c8bb190f92541a2c1e839b98cbc469c9")
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -112,9 +115,10 @@ func main() {
 		})
 
 		r.Route("/widgets", func(r chi.Router) {
-			r.Get("/weather/{screen_id}", weatherWidghet.GetWeather(log, weatherService, buildingRepository, complexSrvc))
-			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
-			r.Get("/news/{screen_id}", newsWidghet.GetNews(log, newsService, buildingRepository))
+			r.Get("/weather/{screen_id}", weatherWidget.GetWeather(log, weatherService, buildingRepository, complexSrvc))
+			r.Get("/currency", currencyWidget.GetCurrencies(log, currencyService))
+			r.Get("/news/{screen_id}", newsWidget.GetNews(log, newsService, buildingRepository))
+			r.Get("/market", marketWidget.GetMarketOffers(log, marketService))
 		})
 	})
 
