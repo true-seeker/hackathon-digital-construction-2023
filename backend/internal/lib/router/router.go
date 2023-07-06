@@ -1,8 +1,8 @@
 package router
 
 import (
-	"backend/internal/config"
 	"backend/internal/http-server/handlers/building"
+	"backend/internal/http-server/handlers/complex"
 	"backend/internal/http-server/handlers/elevator"
 	"backend/internal/http-server/handlers/screen"
 	"backend/internal/http-server/handlers/screenWidget"
@@ -10,7 +10,6 @@ import (
 	marketWidget "backend/internal/http-server/handlers/widget/market"
 	newsWidget "backend/internal/http-server/handlers/widget/news"
 	weatherWidget "backend/internal/http-server/handlers/widget/weather"
-	"backend/internal/http-server/handlers/zhk"
 	"backend/internal/http-server/services/ujin/complexService"
 	"backend/internal/http-server/services/ujin/market"
 	"backend/internal/http-server/services/widget/currency"
@@ -24,8 +23,8 @@ import (
 	"os"
 )
 
-func InitRoutes(router *chi.Mux, log *slog.Logger, cfg *config.Config) {
-	storage, err := postgres.New(cfg.StoragePath)
+func InitRoutes(router *chi.Mux, log *slog.Logger) {
+	storage, err := postgres.New()
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)
@@ -68,10 +67,10 @@ func InitRoutes(router *chi.Mux, log *slog.Logger, cfg *config.Config) {
 			r.Get("/{screen_id}", screenWidget.Get(log, screenWidgetRepository))
 		})
 
-		r.Route("/zhks", func(r chi.Router) {
-			r.Get("/", zhk.GetAll(log, complexSrvc))
-			r.Get("/{id}", zhk.Get(log, complexSrvc))
-			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, complexSrvc))
+		r.Route("/complexes", func(r chi.Router) {
+			r.Get("/", complex.GetAll(log, complexSrvc))
+			r.Get("/{id}", complex.Get(log, complexSrvc))
+			r.Get("/{complex_id}/buildings", building.GetByComplex(log, complexSrvc))
 		})
 
 		r.Route("/widgets", func(r chi.Router) {

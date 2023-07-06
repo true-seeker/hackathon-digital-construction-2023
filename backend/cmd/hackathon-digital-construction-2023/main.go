@@ -40,7 +40,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	routerLib.InitRoutes(router, log, cfg)
+	routerLib.InitRoutes(router, log)
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 

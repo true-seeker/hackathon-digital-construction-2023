@@ -54,10 +54,10 @@ func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 		buildingMap := make(map[int]entities.Building)
 		for _, building := range complex.Data.Buildings {
 			buildingMap[building.Id] = entities.Building{
-				Id:      building.Id,
-				Name:    building.BuildingInfo.Title,
-				Address: building.BuildingInfo.Address.FullAddress,
-				ZhkId:   building.Complex.Id,
+				Id:        building.Id,
+				Name:      building.BuildingInfo.Title,
+				Address:   building.BuildingInfo.Address.FullAddress,
+				ComplexId: building.Complex.Id,
 			}
 		}
 
@@ -95,10 +95,10 @@ func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 		for _, building := range complex.Data.Buildings {
 			if building.Id == id {
 				getResponseOK(w, r, &entities.Building{
-					Id:      building.Id,
-					Name:    building.BuildingInfo.Title,
-					Address: building.BuildingInfo.Address.FullAddress,
-					ZhkId:   building.Complex.Id,
+					Id:        building.Id,
+					Name:      building.BuildingInfo.Title,
+					Address:   building.BuildingInfo.Address.FullAddress,
+					ComplexId: building.Complex.Id,
 				})
 				break
 			}
@@ -106,19 +106,19 @@ func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	}
 }
 
-func GetByZhk(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
+func GetByComplex(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.buildings.GetByZhk"
+		const op = "handlers.buildings.GetByComplex"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		zhkId, err := strconv.Atoi(chi.URLParam(r, "zhk_id"))
+		complexId, err := strconv.Atoi(chi.URLParam(r, "complex_id"))
 		if err != nil {
-			log.Error("failed to convert zhk", sl.Err(err))
+			log.Error("failed to convert complex", sl.Err(err))
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, resp.Error("failed to convert zhk"))
+			render.JSON(w, r, resp.Error("failed to convert complex"))
 			return
 		}
 
@@ -133,12 +133,12 @@ func GetByZhk(log *slog.Logger, complexService ComplexService) http.HandlerFunc 
 		var buildingEntities []entities.Building
 		buildingMap := make(map[int]entities.Building)
 		for _, building := range cmplx.Data.Buildings {
-			if building.Complex.Id == zhkId {
+			if building.Complex.Id == complexId {
 				buildingMap[building.Id] = entities.Building{
-					Id:      building.Id,
-					Name:    building.BuildingInfo.Title,
-					Address: building.BuildingInfo.Address.FullAddress,
-					ZhkId:   zhkId,
+					Id:        building.Id,
+					Name:      building.BuildingInfo.Title,
+					Address:   building.BuildingInfo.Address.FullAddress,
+					ComplexId: complexId,
 				}
 			}
 		}

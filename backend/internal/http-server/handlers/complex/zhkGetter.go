@@ -1,4 +1,4 @@
-package zhk
+package complex
 
 import (
 	"backend/internal/domain/entities"
@@ -15,12 +15,12 @@ import (
 
 type getResponse struct {
 	resp.Response
-	Zhk *entities.Zhk `json:"zhk"`
+	Complex *entities.Complex `json:"complex"`
 }
 
 type getAllResponse struct {
 	resp.Response
-	Zhks *[]entities.Zhk `json:"zhks"`
+	Complexes *[]entities.Complex `json:"complexes"`
 }
 
 type ComplexService interface {
@@ -29,7 +29,7 @@ type ComplexService interface {
 
 func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.zhk.GetAll"
+		const op = "handlers.complex.GetAll"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -43,14 +43,14 @@ func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 			return
 		}
 
-		var complexEntities []entities.Zhk
+		var complexEntities []entities.Complex
 		complexMap := make(map[int]string)
 		for _, building := range complex.Data.Buildings {
 			complexMap[building.Complex.Id] = building.Complex.Title
 		}
 
 		for key, value := range complexMap {
-			var complexEntity entities.Zhk
+			var complexEntity entities.Complex
 			complexEntity.Id = key
 			complexEntity.Name = value
 			complexEntities = append(complexEntities, complexEntity)
@@ -61,7 +61,7 @@ func GetAll(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 
 func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.zhk.Get"
+		const op = "handlers.complex.Get"
 		log = log.With(
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
@@ -84,7 +84,7 @@ func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 
 		for _, building := range complex.Data.Buildings {
 			if building.Id == id {
-				var complexEntity entities.Zhk
+				var complexEntity entities.Complex
 				complexEntity.Id = building.Id
 				complexEntity.Name = building.BuildingInfo.Title
 				getResponseOK(w, r, &complexEntity)
@@ -97,15 +97,15 @@ func Get(log *slog.Logger, complexService ComplexService) http.HandlerFunc {
 	}
 }
 
-func getAllResponseOK(w http.ResponseWriter, r *http.Request, zhks *[]entities.Zhk) {
+func getAllResponseOK(w http.ResponseWriter, r *http.Request, complexes *[]entities.Complex) {
 	render.JSON(w, r, getAllResponse{
-		Response: resp.OK(),
-		Zhks:     zhks,
+		Response:  resp.OK(),
+		Complexes: complexes,
 	})
 }
-func getResponseOK(w http.ResponseWriter, r *http.Request, zhk *entities.Zhk) {
+func getResponseOK(w http.ResponseWriter, r *http.Request, complex *entities.Complex) {
 	render.JSON(w, r, getResponse{
 		Response: resp.OK(),
-		Zhk:      zhk,
+		Complex:  complex,
 	})
 }

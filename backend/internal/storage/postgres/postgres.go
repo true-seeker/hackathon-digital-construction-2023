@@ -13,7 +13,7 @@ func (s *Storage) GetDb() *sql.DB {
 	return s.db
 }
 
-func New(storagePath string) (*Storage, error) {
+func New() (*Storage, error) {
 	connStr := "user=postgres password=postgres dbname=hackathon sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
