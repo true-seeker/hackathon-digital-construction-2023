@@ -99,6 +99,7 @@ func getAllResponseOK(w http.ResponseWriter, r *http.Request, buildings []*entit
 		Buildings: buildings,
 	})
 }
+
 func getResponseOK(w http.ResponseWriter, r *http.Request, building *entities.Building) {
 	render.JSON(w, r, getResponse{
 		Response: resp.OK(),

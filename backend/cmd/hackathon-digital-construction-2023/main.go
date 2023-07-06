@@ -3,8 +3,12 @@ package main
 import (
 	"backend/internal/http-server/handlers/building"
 	"backend/internal/http-server/handlers/elevator"
-	screen "backend/internal/http-server/handlers/screen"
+	"backend/internal/http-server/handlers/screen"
+	currencyWidghet "backend/internal/http-server/handlers/widget/currency"
+	weatherWidghet "backend/internal/http-server/handlers/widget/weather"
 	"backend/internal/http-server/handlers/zhk"
+	"backend/internal/http-server/services/widget/currency"
+	"backend/internal/http-server/services/widget/weather"
 	"backend/internal/storage/postgres"
 	"backend/internal/storage/postgres/repository"
 	"fmt"
@@ -48,6 +52,9 @@ func main() {
 	elevatorRepository := repository.NewElevatorRepository(storage.GetDb())
 	screenRepository := repository.NewScreenRepository(storage.GetDb())
 	zhkRepository := repository.NewZhkRepository(storage.GetDb())
+
+	weatherService := weather.NewWeatherService()
+	currencyService := currency.NewCurrencyService()
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
@@ -94,6 +101,14 @@ func main() {
 		r.Route("/zhks", func(r chi.Router) {
 			r.Post("/", zhk.New(log, zhkRepository))
 			r.Get("/", zhk.GetAll(log, zhkRepository))
+			r.Get("/{id}", zhk.Get(log, zhkRepository))
+			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
+			r.Put("/", zhk.Update(log, zhkRepository))
+		})
+
+		r.Route("/widgets", func(r chi.Router) {
+			r.Get("/weather", weatherWidghet.GetWeather(log, weatherService))
+			r.Get("/currency", currencyWidghet.GetCurrencies(log, currencyService))
 			r.Get("/{id}", zhk.Get(log, zhkRepository))
 			r.Get("/{zhk_id}/buildings", building.GetByZhk(log, buildingRepository))
 			r.Put("/", zhk.Update(log, zhkRepository))
