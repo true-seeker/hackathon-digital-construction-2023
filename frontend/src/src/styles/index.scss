@@ -1,0 +1,10 @@
+@import "./normalize.scss";
+@import "./fonts.scss";
+@import "./cards.scss";
+
+body {
+  background: #ddd;
+  color: #222;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+}

@@ -1,0 +1,98 @@
+.news_widgets {
+  width: 100%;
+  height: 100%;
+
+  .card {
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+
+    border-radius: 10px;
+    background: var(--unnamed, #FFFAFA);
+
+    width: 100%;
+    height: 100%;
+
+
+    .news_card_header {
+      display: flex;
+      padding: 2px 0px;
+      justify-content: center;
+      align-items: flex-start;
+      align-self: stretch;
+
+      color: #000;
+      text-align: center;
+      font-family: Inter;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .line {
+      height: 2px;
+      align-self: stretch;
+      border-radius: 2px;
+      background: var(--unnamed, #0BA6B8);
+    }
+
+    .body {
+      display: flex;
+      padding: 10px 0px;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      align-self: stretch;
+
+      overflow-y: scroll;
+
+      .message {
+        display: flex;
+        padding: 5px 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: stretch;
+
+        border-radius: 10px;
+        background: var(--unnamed, #F2F8FD);
+
+        .news-header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+
+          .time {
+            color: var(--unnamed, #00C0C9);
+            text-align: center;
+            font-family: Inter;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+          }
+
+          .text {
+            color: #000;
+            text-align: center;
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+          }
+        }
+
+        .content {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-self: stretch;
+        }
+      }
+    }
+  }
+}
+

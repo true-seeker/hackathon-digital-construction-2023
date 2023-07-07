@@ -1,0 +1,57 @@
+.usd_widgets {
+  padding: 8.81px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+  gap: 8.81px;
+  flex-wrap: wrap;
+  border-radius: 8.81px;
+  background: #FFFAFA;
+  width: 100%;
+  height: 100%;
+
+  .content {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    width: 100%;
+
+    .row {
+      width: 40%;
+      border-radius: 5px;
+      background: #FFFAFA;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      //justify-content: space-between;
+
+      .col {
+        color: #000;
+        text-align: right;
+        font-family: Inter;
+        font-size: 26.431px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-content: center;
+
+        img {
+          width: 25px;
+          height: 25px;
+        }
+      }
+    }
+  }
+
+
+}

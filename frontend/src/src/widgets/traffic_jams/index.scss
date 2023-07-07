@@ -1,0 +1,114 @@
+.trafficjams_widgets {
+  border-radius: 5px;
+  background: var(--unnamed, #FFFAFA);
+
+  width: 100%;
+  height: 100%;
+
+  .trafficjams_card {
+    display: flex;
+    padding: 10px;
+    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+
+    .trafficjams_card-header {
+      color: var(--unnamed, #000);
+      display: flex;
+      font-family: Inter;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+
+      .trafficjams--red {
+        color: #BA1723;
+      }
+    }
+
+    .trafficjams_card-line {
+      height: 2px;
+      align-self: stretch;
+      border-radius: 2px;
+      background: #0BA6B8;
+    }
+
+    .trafficjams_card-body {
+      width: 100%;
+      padding: 10px;
+
+      .headers {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 34px;
+        color: #000;
+        font-family: Inter;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        align-self: stretch;
+        margin-bottom: 7px;
+      }
+
+      .trafficjams-group {
+        width: 100%;
+        margin-bottom: 10px;
+        .trafficjams-group-header {
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 34px;
+          align-self: stretch;
+
+          color: var(--unnamed, #00C0C9);
+          text-align: center;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-family: Inter;
+          font-size: 17px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+        }
+
+        .trafficjams_line {
+          width: 100%;
+          display: flex;
+          //align-items: flex-start;
+          justify-content: space-between;
+          //gap: 16px;
+          align-self: stretch;
+          .title {
+            color: var(--unnamed, #000);
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+          }
+          .number {
+            color: var(--unnamed, #BA1723);
+            text-align: center;
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+
+            &.number-green {
+              color: #176517 !important;
+            }
+          }
+        }
+      }
+
+    }
+  }
+}
