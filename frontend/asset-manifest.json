@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.0bc4bafa.css",
+    "main.js": "/static/js/main.339719c5.js",
+    "static/js/787.238d4a46.chunk.js": "/static/js/787.238d4a46.chunk.js",
+    "static/media/sun.svg": "/static/media/sun.f5ba7ae48d3a8d16940c128f674f2f17.svg",
+    "static/media/arrow.svg": "/static/media/arrow.2b11c7bcc615b63a55f944d160c4391e.svg",
+    "static/media/bus-icon.svg": "/static/media/bus-icon.6e0ec65365e55d0c92b5afd798139dfa.svg",
+    "static/media/down.svg": "/static/media/down.9dd8b5101483af0e6219c352c455cb78.svg",
+    "static/media/up.svg": "/static/media/up.0ecdd60e2817e0223262443aa5592e60.svg",
+    "index.html": "/index.html",
+    "static/media/chevron-up.svg": "/static/media/chevron-up.269e9e6a7caf2c01629accd6b4214cef.svg",
+    "static/media/chevron-down.svg": "/static/media/chevron-down.f23c7e7908154fc84372b1653d68f785.svg",
+    "static/media/cloud.svg": "/static/media/cloud.f412958b6e8a31e754822f8769dc1872.svg",
+    "static/media/dot.svg": "/static/media/dot.50559781f558545c765ce5c54a082418.svg",
+    "main.0bc4bafa.css.map": "/static/css/main.0bc4bafa.css.map",
+    "main.339719c5.js.map": "/static/js/main.339719c5.js.map",
+    "787.238d4a46.chunk.js.map": "/static/js/787.238d4a46.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0bc4bafa.css",
+    "static/js/main.339719c5.js"
+  ]
+}
