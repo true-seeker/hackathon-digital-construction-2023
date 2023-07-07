@@ -71,7 +71,7 @@ func (b *ElevatorRepository) Update(request *elevator.UpdateRequest) (*entities.
 	return bd, nil
 }
 
-func (b *ElevatorRepository) GetByBuilding(buildingId string) ([]*entities.Elevator, error) {
+func (b *ElevatorRepository) GetByBuilding(buildingId int) ([]*entities.Elevator, error) {
 	rows, err := b.db.Query("select id,name,building_id from elevators WHERE building_id=$1", buildingId)
 	if err != nil {
 		return nil, err

@@ -25,6 +25,7 @@ func main() {
 	)
 
 	router := chi.NewRouter()
+	router.Use()
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -39,6 +40,7 @@ func main() {
 	router.Use(mwLogger.New(log))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
+	router.Use(middleware.NoCache)
 
 	routerLib.InitRoutes(router, log, cfg)
 

@@ -15,7 +15,7 @@ import (
 
 type SaveRequest struct {
 	Name       string `json:"name,omitempty" validate:"required"`
-	BuildingId string `json:"building_id" validate:"required"`
+	BuildingId int    `json:"building_id" validate:"required"`
 }
 
 type saveResponse struct {

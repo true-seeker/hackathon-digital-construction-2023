@@ -11,6 +11,7 @@ import (
 	marketWidget "backend/internal/http-server/handlers/widget/market"
 	newsWidget "backend/internal/http-server/handlers/widget/news"
 	weatherWidget "backend/internal/http-server/handlers/widget/weather"
+	"backend/internal/http-server/services/datagen"
 	"backend/internal/http-server/services/ujin/complexService"
 	"backend/internal/http-server/services/ujin/market"
 	"backend/internal/http-server/services/widget/currency"
@@ -82,4 +83,10 @@ func InitRoutes(router *chi.Mux, log *slog.Logger, cfg *config.Config) {
 		})
 	})
 
+	initData(complexSrvc, elevatorRepository, screenRepository)
+}
+
+func initData(complexSrvc *complexService.Service, elevatorRepository *repository.ElevatorRepository, screenRepository *repository.ScreenRepository) {
+	datagenService := datagen.NewDataGenService(complexSrvc, elevatorRepository, screenRepository)
+	datagenService.GenerateMockData()
 }

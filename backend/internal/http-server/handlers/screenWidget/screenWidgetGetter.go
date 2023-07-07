@@ -29,7 +29,7 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 		)
 		screenId := chi.URLParam(r, "screen_id")
 
-		screen, err := getter.Get(screenId)
+		screenWidgets, err := getter.Get(screenId)
 		if err != nil {
 			log.Error("failed to get screenWidget", sl.Err(err))
 			render.Status(r, http.StatusBadRequest)
@@ -37,7 +37,91 @@ func Get(log *slog.Logger, getter Getter) http.HandlerFunc {
 			return
 		}
 
-		getResponseOK(w, r, screen)
+		if len(screenWidgets) == 0 {
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "63baeddd-2a07-4f71-aa19-62ecbae26429",
+				X:    0,
+				Y:    0,
+				W:    2,
+				H:    2,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "d30bb91e-6718-4380-a196-9b791b26280d",
+				X:    1,
+				Y:    2,
+				W:    5,
+				H:    4,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "d6e2f387-a6ea-471b-96c3-d46a0e7c796d",
+				X:    4,
+				Y:    4,
+				W:    3,
+				H:    2,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "b71bef49-574e-4354-867c-ca77794172be",
+				X:    10,
+				Y:    10,
+				W:    10,
+				H:    4,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "e6b16a02-3d14-4185-b02b-ef1c3035f159",
+				X:    8,
+				Y:    10,
+				W:    6,
+				H:    6,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "070f62e1-dad3-454c-b89f-78df02df1039",
+				X:    8,
+				Y:    10,
+				W:    6,
+				H:    6,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "61493b97-7d24-4957-9d0a-3548f456374f",
+				X:    8,
+				Y:    10,
+				W:    1,
+				H:    6,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "e953c6b2-ce4d-42a1-b1b0-7a264172b1a2",
+				X:    8,
+				Y:    10,
+				W:    1,
+				H:    6,
+				MinW: 1,
+				MinH: 1,
+			})
+			screenWidgets = append(screenWidgets, &entities.ScreenWidget{
+				I:    "7e551a5b-ff79-4c4e-81c7-2697478d6b54",
+				X:    1,
+				Y:    6,
+				W:    1,
+				H:    11,
+				MinW: 1,
+				MinH: 11,
+			})
+		}
+
+		getResponseOK(w, r, screenWidgets)
 	}
 }
 

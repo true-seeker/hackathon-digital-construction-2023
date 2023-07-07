@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
 	"net/http"
+	"strconv"
 )
 
 type getResponse struct {
@@ -25,7 +26,7 @@ type getAllResponse struct {
 type Getter interface {
 	GetAll() ([]*entities.Elevator, error)
 	Get(id string) (*entities.Elevator, error)
-	GetByBuilding(buildingId string) ([]*entities.Elevator, error)
+	GetByBuilding(buildingId int) ([]*entities.Elevator, error)
 }
 
 func GetAll(log *slog.Logger, getter Getter) http.HandlerFunc {
@@ -75,8 +76,13 @@ func GetByBuilding(log *slog.Logger, getter Getter) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
-		buildingId := chi.URLParam(r, "building_id")
-
+		buildingId, err := strconv.Atoi(chi.URLParam(r, "building_id"))
+		if err != nil {
+			log.Error("failed to convert building_id", sl.Err(err))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, resp.Error("failed to convert building_id"))
+			return
+		}
 		elevator, err := getter.GetByBuilding(buildingId)
 		if err != nil {
 			log.Error("failed to get elevator", sl.Err(err))
