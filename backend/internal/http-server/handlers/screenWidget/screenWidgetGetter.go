@@ -61,7 +61,7 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    5,
 		W:    9,
 		H:    1,
-		MinW: 1,
+		MinW: 9,
 		MinH: 1,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
@@ -70,8 +70,8 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    2,
 		W:    7,
 		H:    3,
-		MinW: 1,
-		MinH: 1,
+		MinW: 7,
+		MinH: 3,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
 		I:    "d6e2f387-a6ea-471b-96c3-d46a0e7c796d",
@@ -79,8 +79,8 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    0,
 		W:    7,
 		H:    2,
-		MinW: 1,
-		MinH: 1,
+		MinW: 3,
+		MinH: 2,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
 		I:    "b71bef49-574e-4354-867c-ca77794172be",
@@ -88,8 +88,8 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    12,
 		W:    9,
 		H:    3,
-		MinW: 1,
-		MinH: 1,
+		MinW: 6,
+		MinH: 3,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
 		I:    "e6b16a02-3d14-4185-b02b-ef1c3035f159",
@@ -97,8 +97,8 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    6,
 		W:    9,
 		H:    6,
-		MinW: 1,
-		MinH: 1,
+		MinW: 6,
+		MinH: 6,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
 		I:    "070f62e1-dad3-454c-b89f-78df02df1039",
@@ -106,8 +106,8 @@ func hardCodeData() []*entities.ScreenWidget {
 		Y:    0,
 		W:    4,
 		H:    5,
-		MinW: 1,
-		MinH: 1,
+		MinW: 4,
+		MinH: 5,
 	})
 	screenWidgets = append(screenWidgets, &entities.ScreenWidget{
 		I:    "61493b97-7d24-4957-9d0a-3548f456374f",
